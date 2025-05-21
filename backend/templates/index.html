@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>UMLS Search</title>
+    <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
 </head>
 <body>
     {% include "components/navbar.html" %}
@@ -31,5 +32,6 @@
             {% endfor %}
         </ul>
     {% endif %}
+    {% include "components/footer.html" %}
 </body>
 </html>

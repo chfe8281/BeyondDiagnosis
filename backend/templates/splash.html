@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>UMLS Search</title>
+    <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
 </head>
 <body>
     {% include "components/navbar.html" %}
-    <h1>Care Connect</h1>
-    <h2>Where patients can socialize</h2>
+    <div id = "splashText">
+        <h1>Care Connect</h1>
+        <h2>Where patients can socialize</h2>
+    </div>
+    {% include "components/footer.html" %}
 </body>
 </html>
