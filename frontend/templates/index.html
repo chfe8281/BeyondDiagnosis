@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Dictionary</title>
+</head>
+<body>
+    <h1>Medical Dictionary Search</h1>
+
+    <!-- Form to search for a medical term -->
+    <form method="POST" action="/">
+        <input type="text" name="term" value="{{ term }}" placeholder="Enter a medical term" required>
+        <button type="submit">Search</button>
+    </form>
+
+    {% if definition %}
+        <h2>Definition of "{{ term }}"</h2>
+        <ul>
+            {% for def in definition %}
+                <li>{{ def }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

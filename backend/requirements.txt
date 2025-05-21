@@ -1,0 +1,6 @@
+Flask
+requests
+flask-cors
+python-dotenv
+psycopg2-binary
+SQLAlchemy

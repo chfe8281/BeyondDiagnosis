@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UMLS Search</title>
+</head>
+<body>
+    {% include "components/navbar.html" %}
+    <h1>Search UMLS Concepts</h1>
+    <form method="POST">
+        <input type="text" name="query" placeholder="Enter medical term" required>
+        <button type="submit">Search</button>
+    </form>
+
+    {% if error %}
+        <p style="color:red">{{ error }}</p>
+    {% endif %}
+
+    {% if results %}
+        <h2>Results:</h2>
+        <ul>
+            {% for result in results %}
+                <li>
+                    <strong>{{ result.name }}</strong><br>
+                    <ul>
+                        {% for definition in result.definitions %}
+                            <li>{{ definition }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
