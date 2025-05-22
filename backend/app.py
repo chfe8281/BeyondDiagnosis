@@ -1,12 +1,25 @@
 from flask import Flask, render_template, request
 import requests
 import os
+from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
+from sqlalchemy import text
 
 # Load .env file contents into environment variables
 load_dotenv()
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+with app.app_context():
+    try:
+        db.session.execute(text("SELECT 1"))
+        print("✅ Connected to database.")
+    except Exception as e:
+        print("❌ Failed to connect:", e)
 
 @app.route('/', methods=['GET', 'POST'])
 def splash():
