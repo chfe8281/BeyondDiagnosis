@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UMLS Search</title>
+    <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
+</head>
+<body>
+    {% include "components/navbar.html" %}
+    <form method="POST">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Log In</button>
+    </form>
+
+    {% include "components/footer.html" %}
+</body>
+</html>
