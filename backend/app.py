@@ -40,6 +40,8 @@ def splash():
 users = ""
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    invalid = False
+    message = ""
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -50,14 +52,14 @@ def login():
         if users and check_password_hash(users.password, password):
             print(users.email, users.name)
             login_user(users)
-            flash('Logged in successfully.', 'success')
             print("success")
             return redirect(url_for('dash'))  # Or wherever you want to redirect
         else:
-            flash('Invalid email or password.', 'danger')
+            invalid = True
+            message = 'Invalid email or password.'
             print("failed login")
 
-    return render_template('login.html')
+    return render_template('login.html', invalid = invalid, flag = message)
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
