@@ -37,12 +37,14 @@ with app.app_context():
 def splash():
     return render_template('splash.html')
     
+users = ""
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
         
+        global users
         users = User.query.filter_by(email=email).first()
         print(users.email)
         if users and check_password_hash(users.password, password):
@@ -60,7 +62,7 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dash():
-    return render_template('dashboard.html', user = current_user.name)
+    return render_template('dashboard.html', user = users.name)
 
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
