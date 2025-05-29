@@ -1,4 +1,13 @@
 <nav id = "nav">
-    <a href="{{ url_for('index') }}">Glossary</a>
-    <a href="{{ url_for('splash') }}">Icon</a>
+    {%if current_user.is_authenticated %}
+        <a href="{{ url_for('dash') }}">Dashboard</a>
+        <a href="{{ url_for('index') }}">Glossary</a>
+        <a href="{{ url_for('splash') }}">Icon</a>
+        <a href = "{{url_for('logout')}}"> Logout</a>
+    {% else %}
+        <a href="{{ url_for('login') }}">Glossary</a>
+        <a href="{{ url_for('splash') }}">Icon</a>
+        <a href = "{{url_for('login')}}"> Login</a>
+    {% endif %}
+
 </nav>

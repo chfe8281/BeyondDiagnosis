@@ -1,18 +1,30 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import requests
 import os
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from sqlalchemy import text
+from werkzeug.security import check_password_hash, generate_password_hash
+print(generate_password_hash('test')) 
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
 # Load .env file contents into environment variables
 load_dotenv()
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+from __init__ import app
+from __init__ import db
 
-db = SQLAlchemy(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+from models import User
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 
 with app.app_context():
     try:
@@ -25,6 +37,34 @@ with app.app_context():
 def splash():
     return render_template('splash.html')
     
+users = ""
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    invalid = False
+    message = ""
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        
+        global users
+        users = User.query.filter_by(email=email).first()
+        print(users.email)
+        if users and check_password_hash(users.password, password):
+            print(users.email, users.name)
+            login_user(users)
+            print("success")
+            return redirect(url_for('dash'))  # Or wherever you want to redirect
+        else:
+            invalid = True
+            message = 'Invalid email or password.'
+            print("failed login")
+
+    return render_template('login.html', invalid = invalid, flag = message)
+
+@app.route('/dashboard', methods=['GET', 'POST'])
+@login_required
+def dash():
+    return render_template('dashboard.html', user = current_user.name)
 
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
@@ -64,6 +104,7 @@ def get_definitions(cui, st, language= "ENG"):
     return ["Definition lookup failed."]
 
 @app.route('/search', methods=['GET', 'POST'])
+@login_required
 def index():
     search_results = []
     error = None
@@ -101,6 +142,13 @@ def index():
             error = "Failed to get authentication ticket."
 
     return render_template('index.html', results=search_results, error=error)
+
+@app.route('/logout', methods = ['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out")
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run(debug=True)
