@@ -7,12 +7,12 @@
 </head>
 <body>
     {% include "components/navbar.html" %}
-    {%if invalid %}
-        <p>{{flag}}</p>
-    {% endif %}
     <form method="POST">
         <input type="email" name="email" placeholder="Email" required>
         <input type="password" name="password" placeholder="Password" required>
+        {%if invalid %}
+            <p style="color:rgb(199, 90, 90)">{{flag}}</p>
+        {% endif %}
         <button type="submit">Log In</button>
     </form>
 

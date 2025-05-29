@@ -64,7 +64,7 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dash():
-    return render_template('dashboard.html', user = users.name)
+    return render_template('dashboard.html', user = current_user.name)
 
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
