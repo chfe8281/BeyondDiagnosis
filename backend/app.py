@@ -37,7 +37,38 @@ with app.app_context():
 def splash():
     return render_template('splash.html')
     
-users = ""
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    invalid = False
+    message = ""
+    if request.method == 'POST':
+        username = request.form['username']
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            invalid = True
+            message = "Email already registered"
+            print("email already registered")
+            return render_template('register.html', invalid = invalid, flag = message)
+
+        # Hash the password
+        hashed_password = generate_password_hash(password)
+
+        # Create new user
+        new_user = User(username = username, name=name, email=email, password=hashed_password)
+
+        # Add and commit to the database
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash('Registration successful! Please log in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     invalid = False
@@ -46,7 +77,6 @@ def login():
         email = request.form['email']
         password = request.form['password']
         
-        global users
         users = User.query.filter_by(email=email).first()
         print(users.email)
         if users and check_password_hash(users.password, password):
