@@ -48,7 +48,6 @@ def login():
         
         global users
         users = User.query.filter_by(email=email).first()
-        print(users.email)
         if users and check_password_hash(users.password, password):
             print(users.email, users.name)
             login_user(users)
