@@ -18,7 +18,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import User
+from models import User, Profile
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -101,6 +101,19 @@ def dash():
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def createProfile():
+    if request.method == 'POST':
+        bio = request.form['bio']
+        location = request.form['location']
+        status = request.form['user_type']
+        interests = request.form.getlist('interests[]')
+        conditions = request.form.getlist('conditions[]')
+        
+        new_profile = Profile(user_id = current_user.user_id, bio = bio, status = status, location = location, interests = interests, conditions = conditions)
+        db.session.add(new_profile)
+        db.session.commit()
+        
+        print("Profile Created!")
+        return redirect(url_for('dash'))
     return render_template('createProfile.html')
 
 API_KEY = os.getenv('API_KEY')
