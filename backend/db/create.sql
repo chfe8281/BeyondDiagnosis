@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(50) NOT NULL,
   password VARCHAR(225) NOT NULL,
   email VARCHAR(50) NOT NULL,
-  name VARCHAR(100)
+  name VARCHAR(100),
+  first_login BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS profiles (
@@ -91,7 +92,7 @@ CREATE TABLE IF NOT EXISTS comments (
   FOREIGN KEY (creator_id) REFERENCES users(user_id),
   FOREIGN KEY (post_id) REFERENCES posts(post_id)
 );
-
+DELETE FROM users;
 INSERT INTO users (username, password, email, name) VALUES ('test', 'scrypt:32768:8:1$RZO6a2PV9y9MBqQq$92335e1e4d6b6edcd57ffb9795494d0a006243c7512d3ca93a7f836209521218fd779abd29ed752aa945de9f4fb029480f8a19b35cc17a9a7ae63dd1376e2e41', 'test@gmail.com', 'test');
 
 SELECT * FROM users;
