@@ -81,6 +81,10 @@ def login():
             print(users.email, users.name)
             login_user(users)
             print("success")
+            if users.first_login == False:
+                users.first_login = True;
+                db.session.commit()
+                return redirect(url_for('createProfile'))
             return redirect(url_for('dash'))  # Or wherever you want to redirect
         else:
             invalid = True
@@ -93,6 +97,11 @@ def login():
 @login_required
 def dash():
     return render_template('dashboard.html', user = current_user.name)
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def createProfile():
+    return render_template('createProfile.html')
 
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
