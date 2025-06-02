@@ -11,23 +11,30 @@
     <table class = "profile_table">
         <tr>
             <td><p>Name</p></td>
-            <td>Bio</td>
-            <td>User Status</td>
-            <td>Location</td>
-            <td>Interests</td>
-            <td>Conditions</td>
+            <td>{{name}}</td>
         </tr>
         <tr>
-            <td>{{name}}</td>
+            <td>Bio</td>
             <td>{{bio}}</td>
+        </tr>
+        <tr>
+            <td>User Status</td>
             <td>{{status}}</td>
+        </tr>
+        <tr>
+            <td>Location</td>
             <td>{{location}}</td>
-            {% for interest in interests %}
-                <td>{{ interest }}</td>
-            {% endfor %}
+        </tr>
+        <tr>
+            <td>Interests</td>
+            <td>{{interests}}</td>
+        </tr>
+        <tr>
+            <td>Conditions</td>
             <td>{{conditions}}</td>
         </tr>
     </table>
+    <img src = {{avatar_url}} width = 10% height = 10%>
 
     {% include "components/footer.html" %}
 </body>

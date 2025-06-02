@@ -24,6 +24,7 @@ class Profile(db.Model):
     location = db.Column(db.String(50), nullable=False)
     interests = db.Column(ARRAY(db.Text))
     conditions = db.Column(ARRAY(db.Text))
+    avatar_url = db.Column(db.Text)
 
     def __repr__(self):
         return f'<Profile user_id={self.user_id}, status={self.status}>'

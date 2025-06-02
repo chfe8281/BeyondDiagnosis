@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from sqlalchemy import text
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.utils import secure_filename
 
 # Load .env file contents into environment variables
 load_dotenv()
@@ -98,6 +99,28 @@ def login():
 def dash():
     return render_template('dashboard.html', user = current_user.name)
 
+upload_folder = "backend/static/uploads/"
+
+ALLOWED_EXTENSIONS = ['png', 'jpeg', 'jpg']
+app.config['UPLOAD_FOLDER'] = upload_folder
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def upload_avatar(_file):
+    if _file and allowed_file(_file.filename):
+        filename = secure_filename(_file.filename)
+        filepath = os.path.join(upload_folder, filename)
+        _file.save(filepath)
+        
+        avatar_url = url_for('static', filename = f'uploads/{filename}')
+        profile = profile = Profile.query.filter_by(user_id=current_user.user_id).first()
+        profile.avatar_url = avatar_url
+        db.session.commit()
+        return "complete"
+    return
+        
 @app.route('/createProfile', methods=['GET', 'POST'])
 @login_required
 def createProfile():
@@ -107,11 +130,13 @@ def createProfile():
         status = request.form['user_type']
         interests = request.form.getlist('interests[]')
         conditions = request.form.getlist('conditions[]')
+        file = request.files['avatar_file']
+        avatar_url = "none"
         
-        new_profile = Profile(user_id = current_user.user_id, bio = bio, status = status, location = location, interests = interests, conditions = conditions)
+        new_profile = Profile(user_id = current_user.user_id, bio = bio, status = status, location = location, interests = interests, conditions = conditions, avatar_url = avatar_url)
         db.session.add(new_profile)
         db.session.commit()
-        
+        upload_avatar(file)
         print("Profile Created!")
         return redirect(url_for('showProfile'))
     return render_template('createProfile.html')
@@ -124,7 +149,7 @@ def showProfile():
         if not profile:
             return redirect(url_for('createProfile'))
         
-        return render_template('showProfile.html', name = current_user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = profile.interests, conditions = profile.conditions)
+        return render_template('showProfile.html', name = current_user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), avatar_url = profile.avatar_url)
     return render_template('showProfile.html')
     
 

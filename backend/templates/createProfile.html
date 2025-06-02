@@ -8,7 +8,7 @@
 <body>
     {% include "components/navbar.html" %}
     <p>Edit Profile</p>
-    <form method="POST">
+    <form method="POST" enctype = "multipart/form-data">
         <input type="text-box" name="bio" placeholder="Bio" required>
         <input type="text" name="location" placeholder="Location" required>
         <input type="text" name="user_type" placeholder="Patient" required>
@@ -20,9 +20,7 @@
             <input type = "text"name = "conditions[]">
         </div>
         <button type="button" onclick="addTextInput(false)">Add More</button>
-        <!-- {%if invalid %}
-            <p style="color:rgb(199, 90, 90)">{{flag}}</p>
-        {% endif %} -->
+        <input type = "file" name = "avatar_file" accept = "image/*">
         <button type="submit">Save Profile</button>
     </form>
 
