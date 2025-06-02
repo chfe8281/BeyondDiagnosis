@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MedConnect</title>
+    <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
+</head>
+<body>
+    {% include "components/navbar.html" %}
+    <p>{{name}}'s Profile</p>
+    <table class = "profile_table">
+        <tr>
+            <td><p>Name</p></td>
+            <td>Bio</td>
+            <td>User Status</td>
+            <td>Location</td>
+            <td>Interests</td>
+            <td>Conditions</td>
+        </tr>
+        <tr>
+            <td>{{name}}</td>
+            <td>{{bio}}</td>
+            <td>{{status}}</td>
+            <td>{{location}}</td>
+            {% for interest in interests %}
+                <td>{{ interest }}</td>
+            {% endfor %}
+            <td>{{conditions}}</td>
+        </tr>
+    </table>
+
+    {% include "components/footer.html" %}
+</body>
+</html>

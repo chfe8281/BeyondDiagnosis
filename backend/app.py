@@ -98,7 +98,7 @@ def login():
 def dash():
     return render_template('dashboard.html', user = current_user.name)
 
-@app.route('/profile', methods=['GET', 'POST'])
+@app.route('/createProfile', methods=['GET', 'POST'])
 @login_required
 def createProfile():
     if request.method == 'POST':
@@ -113,8 +113,20 @@ def createProfile():
         db.session.commit()
         
         print("Profile Created!")
-        return redirect(url_for('dash'))
+        return redirect(url_for('showProfile'))
     return render_template('createProfile.html')
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def showProfile():
+    if request.method == "GET":
+        profile = Profile.query.filter_by(user_id=current_user.user_id).first()
+        if not profile:
+            return redirect(url_for('createProfile'))
+        
+        return render_template('showProfile.html', name = current_user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = profile.interests, conditions = profile.conditions)
+    return render_template('showProfile.html')
+    
 
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
