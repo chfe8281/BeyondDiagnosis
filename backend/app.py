@@ -7,6 +7,12 @@ from sqlalchemy import text
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from cloudinary.utils import cloudinary_url
+import traceback
+
 
 # Load .env file contents into environment variables
 load_dotenv()
@@ -14,7 +20,12 @@ load_dotenv()
 from __init__ import app
 from __init__ import db
 
-
+cloudinary.config( 
+    cloud_name = os.getenv("CLOUD_NAME"), 
+    api_key = os.getenv("CLOUD_API_KEY"), 
+    api_secret = os.getenv("API_SECRET"),
+    secure=True
+)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -99,10 +110,10 @@ def login():
 def dash():
     return render_template('dashboard.html', user = current_user.name)
 
-upload_folder = "backend/static/uploads/"
+
 
 ALLOWED_EXTENSIONS = ['png', 'jpeg', 'jpg']
-app.config['UPLOAD_FOLDER'] = upload_folder
+
 
 
 def allowed_file(filename):
@@ -120,6 +131,25 @@ def upload_avatar(_file):
         db.session.commit()
         return "complete"
     return
+
+def upload_avatar_to_cloudinary(_file, user_id):
+    if _file and allowed_file(_file.filename):
+        filename = secure_filename(_file.filename)
+        
+        # Upload directly to Cloudinary
+        try:
+            upload_result = cloudinary.uploader.upload(
+                _file,
+                folder="avatars",  # optional folder
+                public_id=f"user_{user_id}_{filename.rsplit('.', 1)[0]}",
+                overwrite=True,
+                resource_type="image"
+            )
+            print("Upload success:", upload_result['secure_url'])
+            return upload_result['secure_url']
+        except Exception as e:
+            print("Cloudinary upload error:", e)
+            return None
         
 @app.route('/createProfile', methods=['GET', 'POST'])
 @login_required
@@ -131,12 +161,13 @@ def createProfile():
         interests = request.form.getlist('interests[]')
         conditions = request.form.getlist('conditions[]')
         file = request.files['avatar_file']
-        avatar_url = "none"
+        url = upload_avatar_to_cloudinary(file, current_user.user_id)
+        print(url)
         
-        new_profile = Profile(user_id = current_user.user_id, bio = bio, status = status, location = location, interests = interests, conditions = conditions, avatar_url = avatar_url)
+        new_profile = Profile(user_id = current_user.user_id, bio = bio, status = status, location = location, interests = interests, conditions = conditions, avatar_url = url)
         db.session.add(new_profile)
         db.session.commit()
-        upload_avatar(file)
+        
         print("Profile Created!")
         return redirect(url_for('showProfile'))
     return render_template('createProfile.html')
@@ -148,6 +179,9 @@ def showProfile():
         profile = Profile.query.filter_by(user_id=current_user.user_id).first()
         if not profile:
             return redirect(url_for('createProfile'))
+        
+        print(profile.avatar_url)
+
         
         return render_template('showProfile.html', name = current_user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), avatar_url = profile.avatar_url)
     return render_template('showProfile.html')
