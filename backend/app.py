@@ -119,19 +119,6 @@ ALLOWED_EXTENSIONS = ['png', 'jpeg', 'jpg']
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def upload_avatar(_file):
-    if _file and allowed_file(_file.filename):
-        filename = secure_filename(_file.filename)
-        filepath = os.path.join(upload_folder, filename)
-        _file.save(filepath)
-        
-        avatar_url = url_for('static', filename = f'uploads/{filename}')
-        profile = profile = Profile.query.filter_by(user_id=current_user.user_id).first()
-        profile.avatar_url = avatar_url
-        db.session.commit()
-        return "complete"
-    return
-
 def upload_avatar_to_cloudinary(_file, user_id):
     if _file and allowed_file(_file.filename):
         filename = secure_filename(_file.filename)
