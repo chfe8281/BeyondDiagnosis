@@ -37,12 +37,12 @@
                     <input type="text" name="conditions[]">
             {% endif %}
         </div>
-        <button type="button" onclick="addTextInput(false)">Add More</button>
-        <input type = "file" name = "avatar_file" accept = "image/*">
+        <button type="button" onclick="addTextInput(false)">Add More</button> <br>
         {% if avatar_url %}
-            <p>Current avatar:</p>
             <img src="{{ avatar_url }}" alt="Avatar" width="100" height="100">
-        {% endif %}
+        {% endif %}<br>
+        <input type = "file" name = "avatar_file" accept = "image/*"><br>
+        <br>
         <button type="submit">Save Profile</button>
     </form>
 

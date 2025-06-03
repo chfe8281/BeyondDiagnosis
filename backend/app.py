@@ -161,7 +161,7 @@ def createProfile():
             existing_profile.interests = interests
             existing_profile.conditions = conditions
             if file and file.filename != '':
-                existing_profile.avatar_url = upload_avatar_to_cloudinary(file, current_user.user_id)
+                existing_profile.avatar_url = url
             else:
                 existing_profile.avatar_url= existing_avatar_url
             
