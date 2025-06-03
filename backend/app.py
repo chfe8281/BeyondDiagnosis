@@ -141,6 +141,10 @@ def upload_avatar_to_cloudinary(_file, user_id):
 @app.route('/createProfile', methods=['GET', 'POST'])
 @login_required
 def createProfile():
+    
+    existing_profile = Profile.query.filter_by(user_id=current_user.user_id).first()
+    existing_avatar_url = existing_profile.avatar_url if existing_profile else None
+    
     if request.method == 'POST':
         bio = request.form['bio']
         location = request.form['location']
@@ -150,13 +154,37 @@ def createProfile():
         file = request.files['avatar_file']
         url = upload_avatar_to_cloudinary(file, current_user.user_id)
         print(url)
-        
-        new_profile = Profile(user_id = current_user.user_id, bio = bio, status = status, location = location, interests = interests, conditions = conditions, avatar_url = url)
-        db.session.add(new_profile)
+        if existing_profile:
+            existing_profile.bio = bio
+            existing_profile.location = location
+            existing_profile.status = status
+            existing_profile.interests = interests
+            existing_profile.conditions = conditions
+            if file and file.filename != '':
+                existing_profile.avatar_url = upload_avatar_to_cloudinary(file, current_user.user_id)
+            else:
+                existing_profile.avatar_url= existing_avatar_url
+            
+        else: 
+            new_profile = Profile(
+                user_id = current_user.user_id, 
+                bio = bio, status = status, 
+                location = location, 
+                interests = interests, 
+                conditions = conditions, 
+                avatar_url = url)
+            db.session.add(new_profile)
         db.session.commit()
         
         print("Profile Created!")
         return redirect(url_for('showProfile'))
+    
+    elif request.method == "GET":
+        if existing_profile:
+            return render_template('createProfile.html', name = current_user.name, bio = existing_profile.bio, status = existing_profile.status, location = existing_profile.location, interests = existing_profile.interests, conditions = existing_profile.conditions, avatar_url = existing_profile.avatar_url)
+        else:
+            return render_template('createProfile.html')  
+            
     return render_template('createProfile.html')
 
 @app.route('/profile', methods=['GET', 'POST'])
