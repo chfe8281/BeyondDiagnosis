@@ -17,6 +17,13 @@
     position: relative;
 }
 
-#splashText{
-    
+.contents{
+    margin-left: 3%;
+    margin-top: 2%;
+}
+
+#userDropdown{
+  top: 0 !important;
+  left: 100% !important;  /* Position to the right of the button */
+  margin-left: 0.1rem;    /* Small gap */
 }
