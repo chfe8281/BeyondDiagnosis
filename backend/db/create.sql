@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(225) NOT NULL,
   email VARCHAR(50) NOT NULL,
   name VARCHAR(100),
-  first_login BOOLEAN DEFAULT FALSE
+  first_login BOOLEAN DEFAULT FALSE,
+  avatar_url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS profiles (

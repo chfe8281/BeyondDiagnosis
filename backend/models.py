@@ -12,6 +12,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(225), nullable=False)
     name = db.Column(db.String(100))
     first_login = db.Column(db.Boolean, default = False, nullable = False)
+    avatar_url = avatar_url = db.Column(db.Text)
     
     def get_id(self):
         return str(self.user_id) # returns id attribute made by me, as it was not called id.

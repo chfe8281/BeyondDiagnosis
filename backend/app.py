@@ -69,7 +69,7 @@ def register():
         hashed_password = generate_password_hash(password)
 
         # Create new user
-        new_user = User(username = username, name=name, email=email, password=hashed_password)
+        new_user = User(username = username, name=name, email=email, password=hashed_password, avatar_url = 'img/default_avatar.png')
 
         # Add and commit to the database
         db.session.add(new_user)
@@ -108,7 +108,7 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dash():
-    return render_template('dashboard.html', user = current_user.name)
+    return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url)
 
 
 
@@ -162,8 +162,10 @@ def createProfile():
             existing_profile.conditions = conditions
             if file and file.filename != '':
                 existing_profile.avatar_url = url
+                current_user.avatar_url = url
             else:
                 existing_profile.avatar_url= existing_avatar_url
+                current_user.avatar_url = existing_avatar_url
             
         else: 
             new_profile = Profile(
@@ -174,6 +176,7 @@ def createProfile():
                 conditions = conditions, 
                 avatar_url = url)
             db.session.add(new_profile)
+            current_user.avatar_url = url
         db.session.commit()
         
         print("Profile Created!")
@@ -181,7 +184,7 @@ def createProfile():
     
     elif request.method == "GET":
         if existing_profile:
-            return render_template('createProfile.html', name = current_user.name, bio = existing_profile.bio, status = existing_profile.status, location = existing_profile.location, interests = existing_profile.interests, conditions = existing_profile.conditions, avatar_url = existing_profile.avatar_url)
+            return render_template('createProfile.html', name = current_user.name, bio = existing_profile.bio, status = existing_profile.status, location = existing_profile.location, interests = existing_profile.interests, conditions = existing_profile.conditions, avatar_url = current_user.avatar_url)
         else:
             return render_template('createProfile.html')  
             
@@ -198,7 +201,7 @@ def showProfile():
         print(profile.avatar_url)
 
         
-        return render_template('showProfile.html', name = current_user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), avatar_url = profile.avatar_url)
+        return render_template('showProfile.html', name = current_user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), avatar_url = current_user.avatar_url)
     return render_template('showProfile.html')
     
 

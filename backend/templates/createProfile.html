@@ -4,50 +4,52 @@
     <meta charset="UTF-8">
     <title>MedConnect</title>
     <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     {% include "components/navbar.html" %}
-    <p>Edit Profile</p>
-    <form method="POST" enctype = "multipart/form-data" id = "uploadForm">
-        <input type="text-box" name="bio" placeholder="Bio" value = "{{ bio if bio else '' }}" required>
-        <input type="text" name="location" placeholder="Location" value = "{{ location if location else '' }}" required>
-        <input type="text" name="user_type" placeholder="Patient" value = "{{ status if status else '' }}" required>
-        <div id = "interestInputs">
-            {% if interests %}
-                {% for interest in interests %}
-                    <div id = "interest-group">
-                        <input type="text" name="interests[]" value="{{ interest }}">
-                        <button type="button" onclick="removeField(this)">Remove</button>
-                    </div>
-                {% endfor %}
-                {% else %}
-                    <input type="text" name="interests[]">
-            {% endif %}
-        </div>
-        <button type="button" onclick="addTextInput(true)">Add More</button>
-        <div id = "conditionInputs">
-            {% if conditions %}
-                {% for condition in conditions %}
-                    <div id = "condition-group">
-                        <input type="text" name="conditions[]" value="{{ condition }}">
-                        <button type="button" onclick="removeField(this)">Remove</button>
-                    </div>
-                {% endfor %}
-                {% else %}
-                    <input type="text" name="conditions[]">
-            {% endif %}
-        </div>
-        <button type="button" onclick="addTextInput(false)">Add More</button> <br>
-        {% if avatar_url %}
-            <img src="{{ avatar_url }}" alt="Avatar" width="100" height="100">
-        {% endif %}<br>
-        <div id = "fileElement">
-            <input type = "file" id = "fileInput" name = "avatar_file" accept = "image/*"><br>
-        </div>
-        <br>
-        <button type="submit">Save Profile</button>
-    </form>
-
+    <div class = "contents">
+        <p>Edit Profile</p>
+        <form method="POST" enctype = "multipart/form-data" id = "uploadForm">
+            <input type="text-box" name="bio" placeholder="Bio" value = "{{ bio if bio else '' }}" required>
+            <input type="text" name="location" placeholder="Location" value = "{{ location if location else '' }}" required>
+            <input type="text" name="user_type" placeholder="Patient" value = "{{ status if status else '' }}" required>
+            <div id = "interestInputs">
+                {% if interests %}
+                    {% for interest in interests %}
+                        <div id = "interest-group">
+                            <input type="text" name="interests[]" value="{{ interest }}">
+                            <button type="button" onclick="removeField(this)">Remove</button>
+                        </div>
+                    {% endfor %}
+                    {% else %}
+                        <input type="text" name="interests[]">
+                {% endif %}
+            </div>
+            <button type="button" onclick="addTextInput(true)">Add More</button>
+            <div id = "conditionInputs">
+                {% if conditions %}
+                    {% for condition in conditions %}
+                        <div id = "condition-group">
+                            <input type="text" name="conditions[]" value="{{ condition }}">
+                            <button type="button" onclick="removeField(this)">Remove</button>
+                        </div>
+                    {% endfor %}
+                    {% else %}
+                        <input type="text" name="conditions[]">
+                {% endif %}
+            </div>
+            <button type="button" onclick="addTextInput(false)">Add More</button> <br>
+            {% if avatar_url %}
+                <img src="{{ avatar_url }}" alt="Avatar" width="100" height="100">
+            {% endif %}<br>
+            <div id = "fileElement">
+                <input type = "file" id = "fileInput" name = "avatar_file" accept = "image/*"><br>
+            </div>
+            <br>
+            <button type="submit">Save Profile</button>
+        </form>
+    </div>
     {% include "components/footer.html" %}
     <script>
         const fileInput = document.getElementById('fileInput');
