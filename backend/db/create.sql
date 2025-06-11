@@ -1,4 +1,12 @@
-
+DROP TABLE comments;
+DROP TABLE posts;
+DROP TABLE groups_to_users;
+DROP TABLE groups;
+DROP TABLE messages;
+DROP TABLE friends;
+DROP TABLE friend_requests;
+DROP TABLE profiles;
+DROP TABLE users;
 CREATE TABLE IF NOT EXISTS users (
   user_id SERIAL PRIMARY KEY NOT NULL,
   username VARCHAR(50) NOT NULL,
@@ -14,6 +22,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   avatar_url TEXT,
   location VARCHAR(50),
   conditions TEXT[],
+  status VARCHAR(20) CHECK (status in ('Patient', 'Caregiver')) DEFAULT 'Patient',
   interests TEXT[],
   FOREIGN KEY (user_id) REFERENCES users (user_id)
 );

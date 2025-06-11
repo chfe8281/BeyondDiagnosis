@@ -6,6 +6,13 @@ from dotenv import load_dotenv
 from sqlalchemy import text
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.utils import secure_filename
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from cloudinary.utils import cloudinary_url
+import traceback
+
 
 # Load .env file contents into environment variables
 load_dotenv()
@@ -13,12 +20,17 @@ load_dotenv()
 from __init__ import app
 from __init__ import db
 
-
+cloudinary.config( 
+    cloud_name = os.getenv("CLOUD_NAME"), 
+    api_key = os.getenv("CLOUD_API_KEY"), 
+    api_secret = os.getenv("API_SECRET"),
+    secure=True
+)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import User
+from models import User, Profile
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -98,10 +110,97 @@ def login():
 def dash():
     return render_template('dashboard.html', user = current_user.name)
 
-@app.route('/profile', methods=['GET', 'POST'])
+
+
+ALLOWED_EXTENSIONS = ['png', 'jpeg', 'jpg']
+
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def upload_avatar_to_cloudinary(_file, user_id):
+    if _file and allowed_file(_file.filename):
+        filename = secure_filename(_file.filename)
+        
+        # Upload directly to Cloudinary
+        try:
+            upload_result = cloudinary.uploader.upload(
+                _file,
+                folder="avatars",  # optional folder
+                public_id=f"user_{user_id}_{filename.rsplit('.', 1)[0]}",
+                overwrite=True,
+                resource_type="image"
+            )
+            print("Upload success:", upload_result['secure_url'])
+            return upload_result['secure_url']
+        except Exception as e:
+            print("Cloudinary upload error:", e)
+            return None
+        
+@app.route('/createProfile', methods=['GET', 'POST'])
 @login_required
 def createProfile():
+    
+    existing_profile = Profile.query.filter_by(user_id=current_user.user_id).first()
+    existing_avatar_url = existing_profile.avatar_url if existing_profile else None
+    
+    if request.method == 'POST':
+        bio = request.form['bio']
+        location = request.form['location']
+        status = request.form['user_type']
+        interests = request.form.getlist('interests[]')
+        conditions = request.form.getlist('conditions[]')
+        file = request.files['avatar_file']
+        url = upload_avatar_to_cloudinary(file, current_user.user_id)
+        print(url)
+        if existing_profile:
+            existing_profile.bio = bio
+            existing_profile.location = location
+            existing_profile.status = status
+            existing_profile.interests = interests
+            existing_profile.conditions = conditions
+            if file and file.filename != '':
+                existing_profile.avatar_url = url
+            else:
+                existing_profile.avatar_url= existing_avatar_url
+            
+        else: 
+            new_profile = Profile(
+                user_id = current_user.user_id, 
+                bio = bio, status = status, 
+                location = location, 
+                interests = interests, 
+                conditions = conditions, 
+                avatar_url = url)
+            db.session.add(new_profile)
+        db.session.commit()
+        
+        print("Profile Created!")
+        return redirect(url_for('showProfile'))
+    
+    elif request.method == "GET":
+        if existing_profile:
+            return render_template('createProfile.html', name = current_user.name, bio = existing_profile.bio, status = existing_profile.status, location = existing_profile.location, interests = existing_profile.interests, conditions = existing_profile.conditions, avatar_url = existing_profile.avatar_url)
+        else:
+            return render_template('createProfile.html')  
+            
     return render_template('createProfile.html')
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def showProfile():
+    if request.method == "GET":
+        profile = Profile.query.filter_by(user_id=current_user.user_id).first()
+        if not profile:
+            return redirect(url_for('createProfile'))
+        
+        print(profile.avatar_url)
+
+        
+        return render_template('showProfile.html', name = current_user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), avatar_url = profile.avatar_url)
+    return render_template('showProfile.html')
+    
 
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
