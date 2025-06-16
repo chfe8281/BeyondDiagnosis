@@ -30,7 +30,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import User, Profile
+from models import User, Profile, Friends, Friend_Requests
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -67,6 +67,7 @@ def register():
 
         # Hash the password
         hashed_password = generate_password_hash(password)
+        print(hashed_password)
 
         # Create new user
         new_user = User(username = username, name=name, email=email, password=hashed_password, avatar_url = 'img/default_avatar.png')
@@ -204,7 +205,50 @@ def showProfile():
         return render_template('showProfile.html', name = current_user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), avatar_url = current_user.avatar_url)
     return render_template('showProfile.html')
     
+@app.route('/friends', methods = ['GET', 'POST'])
+@login_required
+def viewFriends():
+    if request.method == 'GET':
+        usernames = []
+        friends = Friends.query.filter((Friends.user1_id == current_user.user_id) | (Friends.user2_id == current_user.user_id)).all()
+        for friend in friends:
+            if (friend.user1_id == current_user.user_id):
+                usernames.append(User.query.filter_by(user_id = friend.user2_id).first().username)
+                
+            else:
+                user = User.query.filter_by(user_id = friend.user1_id).first()
+                usernames.append(user.username)
+                print(user.username)
+            
+        
+        return render_template('friends.html', friends = usernames)
+        
+    return render_template('friends.html')
 
+
+@app.route('/friends/requests/send', methods = ['GET', 'POST'])
+@login_required
+def send_friend_request():
+    
+    return render_template('friends.html')
+    
+@app.route('/friends/requests/accept', methods = ['GET', 'POST'])
+@login_required    
+def accept_friend_request():
+    
+    return render_template('friends.html')
+
+@app.route('/friends/requests/reject', methods = ['GET', 'POST'])
+@login_required
+def reject_friend_request():
+    
+    return render_template('friends.html')
+    
+@app.route('/friends/search', methods = ['GET', 'POST'])
+@login_required
+def search_users():
+    return render_template('friends.html')
+    
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
 SEARCH_ENDPOINT = "https://uts-ws.nlm.nih.gov/rest/search/current"
