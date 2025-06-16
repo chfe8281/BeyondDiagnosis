@@ -12,7 +12,7 @@
                         <a class="nav-link" href="{{ url_for('logout') }}">Groups</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">Friends</a>
+                        <a class="nav-link" href="{{ url_for('viewFriends') }}">Friends</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('logout') }}">Messages</a>
@@ -21,7 +21,7 @@
                 <ul class="navbar-nav ms-auto"> 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="{{avatar_url}}" alt="{{ url_for('static', filename = 'default_avatar' or 'img/default_avatar.png') }}" class="rounded-circle" width="32" height="32" style = "border: 2px solid rgb(55, 50, 62);">
+                            <img src="{{  avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="User" class="rounded-circle" width="32" height="32" style = "border: 2px solid rgb(55, 50, 62);">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="{{ url_for('showProfile') }}">Profile</a></li>

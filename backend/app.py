@@ -209,19 +209,18 @@ def showProfile():
 @login_required
 def viewFriends():
     if request.method == 'GET':
-        usernames = []
+        users = []
         friends = Friends.query.filter((Friends.user1_id == current_user.user_id) | (Friends.user2_id == current_user.user_id)).all()
         for friend in friends:
             if (friend.user1_id == current_user.user_id):
-                usernames.append(User.query.filter_by(user_id = friend.user2_id).first().username)
+                users.append(User.query.filter_by(user_id = friend.user2_id).first())
                 
             else:
                 user = User.query.filter_by(user_id = friend.user1_id).first()
-                usernames.append(user.username)
-                print(user.username)
+                users.append(user)
             
         
-        return render_template('friends.html', friends = usernames)
+        return render_template('friends.html', friends = users, avatar_url = current_user.avatar_url)
         
     return render_template('friends.html')
 

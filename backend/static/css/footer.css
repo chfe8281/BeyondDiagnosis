@@ -27,3 +27,21 @@
   left: 100% !important;  /* Position to the right of the button */
   margin-left: 0.1rem;    /* Small gap */
 }
+
+table{
+    border: 1px solid black;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 10%;
+}
+td{
+    border: 1px solid black;
+}
+
+#avatar{
+    border: 2px solid rgb(55, 50, 62);
+}
+
+.avatar_cell{
+    text-align: center;
+}
