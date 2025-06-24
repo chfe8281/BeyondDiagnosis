@@ -219,8 +219,19 @@ def viewFriends():
                 user = User.query.filter_by(user_id = friend.user1_id).first()
                 users.append(user)
             
-        
-        return render_template('friends.html', friends = users, avatar_url = current_user.avatar_url)
+        requests = Friend_Requests.query.filter((Friend_Requests.receiver_id == current_user.user_id) | (Friend_Requests.sender_id == current_user.user_id)).all()
+        requests_received = []
+        requests_sent = []
+        for req in requests:
+            if(req.sender_id == current_user.user_id and req.status == 'pending'):
+                receiver = User.query.filter_by(user_id = req.receiver_id).first()
+                requests_sent.append({'user': receiver, 'req_id': req.request_id})
+                
+            elif (req.receiver_id == current_user.user_id and req.status == 'pending'):
+                sender = User.query.filter_by(user_id = req.sender_id).first()
+                requests_received.append({'user': sender, 'req_id': req.request_id})
+                
+        return render_template('friends.html', friends = users, requests_received = requests_received, requests_sent = requests_sent, avatar_url = current_user.avatar_url)
         
     return render_template('friends.html')
 
@@ -231,11 +242,27 @@ def send_friend_request():
     
     return render_template('friends.html')
     
-@app.route('/friends/requests/accept', methods = ['GET', 'POST'])
+@app.route('/friends/requests/<action>/<int:input_request_id>', methods = ['POST'])
 @login_required    
-def accept_friend_request():
+def handle_friend_request(action, input_request_id):
+    friend_request = Friend_Requests.query.filter_by(request_id = input_request_id).first()
+    if not friend_request or friend_request.receiver_id != current_user.user_id:
+        flash("Invalid friend request.", "danger")
+        return redirect(url_for('viewFriends'))
     
-    return render_template('friends.html')
+    if action == 'accept':
+        friend_request.status = 'accepted'
+        if(friend_request.receiver_id < friend_request.sender_id):
+            new_friendship = Friends(user1_id = friend_request.receiver_id, user2_id = friend_request.sender_id)
+        elif(friend_request.sender_id < friend_request.receiver_id):
+            new_friendship = Friends(user1_id = friend_request.sender_id, user2_id = friend_request.receiver_id)
+        db.session.add(new_friendship)
+    
+    elif action == 'reject':
+        friend_request.status = 'rejected'
+        
+    db.session.commit()
+    return redirect(url_for('viewFriends'))
 
 @app.route('/friends/requests/reject', methods = ['GET', 'POST'])
 @login_required
