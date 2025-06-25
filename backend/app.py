@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import requests
 import os
 from flask_sqlalchemy import SQLAlchemy
@@ -236,10 +236,16 @@ def viewFriends():
     return render_template('friends.html')
 
 
-@app.route('/friends/requests/send', methods = ['GET', 'POST'])
+@app.route('/friends/requests/send/<int:input_request_id>', methods = ['POST'])
 @login_required
-def send_friend_request():
+def send_friend_request(input_request_id):
     
+    sender = current_user.user_id
+    receiver = input_request_id
+    
+    friendRequest = Friend_Requests(sender_id = sender, receiver_id = receiver)
+    db.session.add(friendRequest)
+    db.session.commit()
     return render_template('friends.html')
     
 @app.route('/friends/requests/<action>/<int:input_request_id>', methods = ['POST'])
@@ -273,7 +279,15 @@ def reject_friend_request():
 @app.route('/friends/search', methods = ['GET', 'POST'])
 @login_required
 def search_users():
-    return render_template('friends.html')
+    query = request.args.get('query')
+    if not query:
+        return jsonify({'error': 'Query parameter is required'}), 400
+    
+    results = User.query.filter(User.username.ilike(f"%{query}%")).limit(10).all()
+    
+    users_list = [{'id':user.user_id, 'username': user.username} for user in results ]
+
+    return jsonify(users_list)
     
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
