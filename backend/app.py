@@ -243,10 +243,17 @@ def send_friend_request(input_request_id):
     sender = current_user.user_id
     receiver = input_request_id
     
+    existingRequest = Friend_Requests.query.filter((Friend_Requests.sender_id == sender) & (Friend_Requests.receiver_id == receiver)).all()
+    existingFriendship = Friends.query.filter(((Friends.user1_id == sender) & (Friends.user2_id == receiver)) | ((Friends.user2_id == sender) & (Friends.user1_id == receiver))).all()
+    if(existingRequest or existingFriendship):
+        print("not sent")
+        return redirect(url_for('viewFriends'))
+    
     friendRequest = Friend_Requests(sender_id = sender, receiver_id = receiver)
     db.session.add(friendRequest)
     db.session.commit()
-    return render_template('friends.html')
+    
+    return redirect(url_for('viewFriends'))
     
 @app.route('/friends/requests/<action>/<int:input_request_id>', methods = ['POST'])
 @login_required    
@@ -269,12 +276,6 @@ def handle_friend_request(action, input_request_id):
         
     db.session.commit()
     return redirect(url_for('viewFriends'))
-
-@app.route('/friends/requests/reject', methods = ['GET', 'POST'])
-@login_required
-def reject_friend_request():
-    
-    return render_template('friends.html')
     
 @app.route('/friends/search', methods = ['GET', 'POST'])
 @login_required
@@ -283,7 +284,7 @@ def search_users():
     if not query:
         return jsonify({'error': 'Query parameter is required'}), 400
     
-    results = User.query.filter(User.username.ilike(f"%{query}%")).limit(10).all()
+    results = User.query.filter((User.username.ilike(f"%{query}%")) & (User.username != current_user.username)).limit(10).all()
     
     users_list = [{'id':user.user_id, 'username': user.username} for user in results ]
 

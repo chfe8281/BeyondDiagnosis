@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   conditions TEXT[],
   status VARCHAR(20) CHECK (status in ('Patient', 'Caregiver')) DEFAULT 'Patient',
   interests TEXT[],
+  private BOOLEAN,
   FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
