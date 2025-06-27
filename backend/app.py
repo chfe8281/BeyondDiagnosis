@@ -109,7 +109,7 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dash():
-    return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url)
+    return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url, user_id = current_user.user_id)
 
 
 
@@ -152,6 +152,8 @@ def createProfile():
         status = request.form['user_type']
         interests = request.form.getlist('interests[]')
         conditions = request.form.getlist('conditions[]')
+        private = request.form.get('private') == 'on'
+        print(private)
         file = request.files['avatar_file']
         url = upload_avatar_to_cloudinary(file, current_user.user_id)
         print(url)
@@ -161,6 +163,7 @@ def createProfile():
             existing_profile.status = status
             existing_profile.interests = interests
             existing_profile.conditions = conditions
+            existing_profile.private = private
             if file and file.filename != '':
                 existing_profile.avatar_url = url
                 current_user.avatar_url = url
@@ -175,34 +178,41 @@ def createProfile():
                 location = location, 
                 interests = interests, 
                 conditions = conditions, 
+                private = private,
                 avatar_url = url)
             db.session.add(new_profile)
             current_user.avatar_url = url
         db.session.commit()
         
         print("Profile Created!")
-        return redirect(url_for('showProfile'))
+        return redirect(url_for('showProfile', id = current_user.user_id))
     
     elif request.method == "GET":
         if existing_profile:
-            return render_template('createProfile.html', name = current_user.name, bio = existing_profile.bio, status = existing_profile.status, location = existing_profile.location, interests = existing_profile.interests, conditions = existing_profile.conditions, avatar_url = current_user.avatar_url)
+            return render_template('createProfile.html', name = current_user.name, bio = existing_profile.bio, status = existing_profile.status, location = existing_profile.location, interests = existing_profile.interests, conditions = existing_profile.conditions, avatar_url = current_user.avatar_url, private = existing_profile.private, user_id = current_user.user_id)
         else:
-            return render_template('createProfile.html')  
+            return render_template('createProfile.html', user_id = current_user.user_id)  
             
     return render_template('createProfile.html')
 
-@app.route('/profile', methods=['GET', 'POST'])
+@app.route('/profile/<int:id>', methods=['GET', 'POST'])
 @login_required
-def showProfile():
+def showProfile(id):
     if request.method == "GET":
-        profile = Profile.query.filter_by(user_id=current_user.user_id).first()
+        user = User.query.filter_by(user_id = id).first()
+        profile = Profile.query.filter_by(user_id=id).first()
         if not profile:
             return redirect(url_for('createProfile'))
         
         print(profile.avatar_url)
-
         
-        return render_template('showProfile.html', name = current_user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), avatar_url = current_user.avatar_url)
+        edit = True
+        if id != current_user.user_id:
+            edit = False
+        else:
+            edit = True
+        
+        return render_template('showProfile.html', edit = edit, name = user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), users_avatar_url = user.avatar_url, avatar_url = current_user.avatar_url, private = profile.private, other_users_id = id, user_id = current_user.user_id)
     return render_template('showProfile.html')
     
 @app.route('/friends', methods = ['GET', 'POST'])
@@ -231,7 +241,7 @@ def viewFriends():
                 sender = User.query.filter_by(user_id = req.sender_id).first()
                 requests_received.append({'user': sender, 'req_id': req.request_id})
                 
-        return render_template('friends.html', friends = users, requests_received = requests_received, requests_sent = requests_sent, avatar_url = current_user.avatar_url)
+        return render_template('friends.html', friends = users, requests_received = requests_received, requests_sent = requests_sent, avatar_url = current_user.avatar_url, user_id = current_user.user_id)
         
     return render_template('friends.html')
 
@@ -286,7 +296,14 @@ def search_users():
     
     results = User.query.filter((User.username.ilike(f"%{query}%")) & (User.username != current_user.username)).limit(10).all()
     
-    users_list = [{'id':user.user_id, 'username': user.username} for user in results ]
+    users_list = []
+    for user in results:
+        profile = Profile.query.filter(Profile.user_id == user.user_id).first()
+        users_list.append({
+            'id': user.user_id, 
+            'username': user.username,
+            'private': profile.private if profile else False 
+        }) 
 
     return jsonify(users_list)
     

@@ -40,6 +40,12 @@
                 {% endif %}
             </div>
             <button type="button" onclick="addTextInput(false)">Add More</button> <br>
+            <div id = "privateSwitch">
+                <label class="switch">
+                    <input type="checkbox" name = "private">
+                    <span class="slider round"></span>
+                </label>
+            </div>
             {% if avatar_url %}
                 <img src="{{ avatar_url }}" alt="Avatar" width="100" height="100">
             {% endif %}<br>

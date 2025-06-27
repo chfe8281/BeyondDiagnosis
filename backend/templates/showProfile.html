@@ -35,12 +35,22 @@
                 <td>Conditions</td>
                 <td>{{conditions}}</td>
             </tr>
+            <tr>
+                <td>Private</td>
+                <td>{{"Yes" if private else "No" }}</td>
+            </tr>
         </table>
-        <img src = "{{avatar_url}}" width = 10% height = 10%>
-
-        <a href = "{{ url_for('createProfile') }}">Edit Profile</a>
+        <img src = "{{users_avatar_url}}" width = 10% height = 10%>
+        {% if edit %}
+            <a href = "{{ url_for('createProfile') }}">Edit Profile</a>
+            {% else %}
+                <button class="friendReq_Button" type="button" onclick="event.stopPropagation(); sendFriendRequest('{{other_users_id}}')">
+                    Add Friend
+                </button>
+        {% endif %}
     </div>
 
     {% include "components/footer.html" %}
+    <script src = "../static/src/app.js"></script>
 </body>
 </html>

@@ -41,12 +41,19 @@ document.addEventListener("DOMContentLoaded", function() {
     if (users.length === 0) {
       resultsDiv.innerHTML = "<div class='dropdown-item'>No users found</div>";
     } else {
-      resultsDiv.innerHTML = users.map(user => `
-        <div class="dropdown-item" onclick="selectUser('${user.username}')">
-            ${user.username}
-            <button class="friendReq_Button" type="button" onclick="event.stopPropagation(); sendFriendRequest(${user.id})">Add Friend</button>
-        </div>
-      `).join('');
+     
+        resultsDiv.innerHTML = users.map(user => {
+            const usernameHTML = user.private
+                ? `${user.username}`
+                : `<a href="/profile/${user.id}" class="profile-link">${user.username}</a>`;
+
+                return `
+            <div class="dropdown-item" onclick="selectUser('${user.username}')">
+                ${usernameHTML}
+                <button class="friendReq_Button" type="button" onclick="event.stopPropagation(); sendFriendRequest(${user.id})">
+                    Add Friend
+                </button>
+            </div>`}).join('');
     }
 
     resultsDiv.style.display = "block";
