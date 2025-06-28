@@ -207,12 +207,24 @@ def showProfile(id):
         print(profile.avatar_url)
         
         edit = True
+        requests = False
+        friends = False
         if id != current_user.user_id:
             edit = False
+            friends = Friends.query.filter(((Friends.user1_id == id) & (Friends.user2_id == current_user.user_id)) | ((Friends.user1_id == current_user.user_id) &(Friends.user2_id == id))).first()
+            if friends:
+                friends = True
+            else:
+                friends = False
+            requests = Friend_Requests.query.filter(((Friend_Requests.receiver_id == id) & (Friend_Requests.sender_id == current_user.user_id)) | ((Friend_Requests.sender_id == id) & (Friend_Requests.receiver_id == current_user.user_id))).first()
+            if requests:
+                requests = True
+            else:
+                requests = False
         else:
             edit = True
         
-        return render_template('showProfile.html', edit = edit, name = user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), users_avatar_url = user.avatar_url, avatar_url = current_user.avatar_url, private = profile.private, other_users_id = id, user_id = current_user.user_id)
+        return render_template('showProfile.html', friends = friends, requests = requests, edit = edit, name = user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), users_avatar_url = user.avatar_url, avatar_url = current_user.avatar_url, private = profile.private, other_users_id = id, user_id = current_user.user_id)
     return render_template('showProfile.html')
     
 @app.route('/friends', methods = ['GET', 'POST'])
@@ -299,10 +311,22 @@ def search_users():
     users_list = []
     for user in results:
         profile = Profile.query.filter(Profile.user_id == user.user_id).first()
+        friends = Friends.query.filter(((Friends.user1_id == user.user_id) & (Friends.user2_id == current_user.user_id)) | ((Friends.user1_id == current_user.user_id) &(Friends.user2_id == user.user_id))).first()
+        if friends:
+            friends = True
+        else:
+            friends = False
+        requests = Friend_Requests.query.filter(((Friend_Requests.receiver_id == user.user_id) & (Friend_Requests.sender_id == current_user.user_id)) | ((Friend_Requests.sender_id == user.user_id) & (Friend_Requests.receiver_id == current_user.user_id))).first()
+        if requests:
+            requests = True
+        else:
+            requests = False
         users_list.append({
             'id': user.user_id, 
             'username': user.username,
-            'private': profile.private if profile else False 
+            'private': profile.private if profile else False,
+            'friends': friends,
+            'requests': requests
         }) 
 
     return jsonify(users_list)

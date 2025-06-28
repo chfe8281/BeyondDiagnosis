@@ -44,9 +44,15 @@
         {% if edit %}
             <a href = "{{ url_for('createProfile') }}">Edit Profile</a>
             {% else %}
-                <button class="friendReq_Button" type="button" onclick="event.stopPropagation(); sendFriendRequest('{{other_users_id}}')">
-                    Add Friend
-                </button>
+                {% if friends %}
+                    <button class="friendReq_Button" type="button" disabled>Friends</button>
+                    {% elif  requests %}
+                        <button class="friendReq_Button" type="button" disabled>Request Sent</button>
+                    {% else %}
+                        <button class="friendReq_Button" type="button" onclick="event.stopPropagation(); sendFriendRequest('{{other_users_id}}')">
+                            Add Friend
+                        </button>
+                {% endif %}
         {% endif %}
     </div>
 

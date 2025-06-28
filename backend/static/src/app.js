@@ -12,7 +12,7 @@ async function sendFriendRequest(userId) {
     });
 
     if (response.ok) {
-      alert("Friend request sent!");
+      window.location.href = '/friends';
     } else {
       alert("Failed to send request");
     }
@@ -46,13 +46,18 @@ document.addEventListener("DOMContentLoaded", function() {
             const usernameHTML = user.private
                 ? `${user.username}`
                 : `<a href="/profile/${user.id}" class="profile-link">${user.username}</a>`;
+            const buttonHTML = user.friends
+                ? `<button class="friendReq_Button" type="button" disabled>Friends</button>`
+                : user.requests
+                    ? `<button class="friendReq_Button" type="button" disabled>Request Sent</button>`
+                    : `<button class="friendReq_Button" type="button" onclick="event.stopPropagation(); sendFriendRequest(${user.id})">
+                        Add Friend
+                        </button>`;
 
                 return `
             <div class="dropdown-item" onclick="selectUser('${user.username}')">
                 ${usernameHTML}
-                <button class="friendReq_Button" type="button" onclick="event.stopPropagation(); sendFriendRequest(${user.id})">
-                    Add Friend
-                </button>
+                ${buttonHTML}
             </div>`}).join('');
     }
 
