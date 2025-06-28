@@ -27,6 +27,7 @@ class Profile(db.Model):
     interests = db.Column(ARRAY(db.Text))
     conditions = db.Column(ARRAY(db.Text))
     avatar_url = db.Column(db.Text)
+    private = db.Column(db.Boolean, default = False, nullable = False)
 
     def __repr__(self):
         return f'<Profile user_id={self.user_id}, status={self.status}>'
@@ -38,3 +39,10 @@ class Friend_Requests(db.Model):
     receiver_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable = False)
     requested_at = db.Column(db.DateTime, default = datetime.now(timezone.utc))
     status = db.Column(db.String(20), db.CheckConstraint("status IN ('pending', 'accepted', 'rejected')"), default = 'pending', nullable = False)
+    
+class Friends(db.Model):
+    __tablename__ = 'friends'
+    user1_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), primary_key = True)
+    user2_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), primary_key = True)
+    __tableargs__ = (
+        db.CheckConstraint(user1_id < user2_id, name = "check_diff_users"),)

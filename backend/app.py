@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import requests
 import os
 from flask_sqlalchemy import SQLAlchemy
@@ -30,7 +30,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import User, Profile
+from models import User, Profile, Friends, Friend_Requests
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -67,6 +67,7 @@ def register():
 
         # Hash the password
         hashed_password = generate_password_hash(password)
+        print(hashed_password)
 
         # Create new user
         new_user = User(username = username, name=name, email=email, password=hashed_password, avatar_url = 'img/default_avatar.png')
@@ -108,7 +109,7 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dash():
-    return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url)
+    return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url, user_id = current_user.user_id)
 
 
 
@@ -151,6 +152,8 @@ def createProfile():
         status = request.form['user_type']
         interests = request.form.getlist('interests[]')
         conditions = request.form.getlist('conditions[]')
+        private = request.form.get('private') == 'on'
+        print(private)
         file = request.files['avatar_file']
         url = upload_avatar_to_cloudinary(file, current_user.user_id)
         print(url)
@@ -160,6 +163,7 @@ def createProfile():
             existing_profile.status = status
             existing_profile.interests = interests
             existing_profile.conditions = conditions
+            existing_profile.private = private
             if file and file.filename != '':
                 existing_profile.avatar_url = url
                 current_user.avatar_url = url
@@ -174,37 +178,159 @@ def createProfile():
                 location = location, 
                 interests = interests, 
                 conditions = conditions, 
+                private = private,
                 avatar_url = url)
             db.session.add(new_profile)
             current_user.avatar_url = url
         db.session.commit()
         
         print("Profile Created!")
-        return redirect(url_for('showProfile'))
+        return redirect(url_for('showProfile', id = current_user.user_id))
     
     elif request.method == "GET":
         if existing_profile:
-            return render_template('createProfile.html', name = current_user.name, bio = existing_profile.bio, status = existing_profile.status, location = existing_profile.location, interests = existing_profile.interests, conditions = existing_profile.conditions, avatar_url = current_user.avatar_url)
+            return render_template('createProfile.html', name = current_user.name, bio = existing_profile.bio, status = existing_profile.status, location = existing_profile.location, interests = existing_profile.interests, conditions = existing_profile.conditions, avatar_url = current_user.avatar_url, private = existing_profile.private, user_id = current_user.user_id)
         else:
-            return render_template('createProfile.html')  
+            return render_template('createProfile.html', user_id = current_user.user_id)  
             
     return render_template('createProfile.html')
 
-@app.route('/profile', methods=['GET', 'POST'])
+@app.route('/profile/<int:id>', methods=['GET', 'POST'])
 @login_required
-def showProfile():
+def showProfile(id):
     if request.method == "GET":
-        profile = Profile.query.filter_by(user_id=current_user.user_id).first()
+        user = User.query.filter_by(user_id = id).first()
+        profile = Profile.query.filter_by(user_id=id).first()
         if not profile:
             return redirect(url_for('createProfile'))
         
         print(profile.avatar_url)
-
         
-        return render_template('showProfile.html', name = current_user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), avatar_url = current_user.avatar_url)
+        edit = True
+        requests = False
+        friends = False
+        if id != current_user.user_id:
+            edit = False
+            friends = Friends.query.filter(((Friends.user1_id == id) & (Friends.user2_id == current_user.user_id)) | ((Friends.user1_id == current_user.user_id) &(Friends.user2_id == id))).first()
+            if friends:
+                friends = True
+            else:
+                friends = False
+            requests = Friend_Requests.query.filter(((Friend_Requests.receiver_id == id) & (Friend_Requests.sender_id == current_user.user_id)) | ((Friend_Requests.sender_id == id) & (Friend_Requests.receiver_id == current_user.user_id))).first()
+            if requests:
+                requests = True
+            else:
+                requests = False
+        else:
+            edit = True
+        
+        return render_template('showProfile.html', friends = friends, requests = requests, edit = edit, name = user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), users_avatar_url = user.avatar_url, avatar_url = current_user.avatar_url, private = profile.private, other_users_id = id, user_id = current_user.user_id)
     return render_template('showProfile.html')
     
+@app.route('/friends', methods = ['GET', 'POST'])
+@login_required
+def viewFriends():
+    if request.method == 'GET':
+        users = []
+        friends = Friends.query.filter((Friends.user1_id == current_user.user_id) | (Friends.user2_id == current_user.user_id)).all()
+        for friend in friends:
+            if (friend.user1_id == current_user.user_id):
+                users.append(User.query.filter_by(user_id = friend.user2_id).first())
+                
+            else:
+                user = User.query.filter_by(user_id = friend.user1_id).first()
+                users.append(user)
+            
+        requests = Friend_Requests.query.filter((Friend_Requests.receiver_id == current_user.user_id) | (Friend_Requests.sender_id == current_user.user_id)).all()
+        requests_received = []
+        requests_sent = []
+        for req in requests:
+            if(req.sender_id == current_user.user_id and req.status == 'pending'):
+                receiver = User.query.filter_by(user_id = req.receiver_id).first()
+                requests_sent.append({'user': receiver, 'req_id': req.request_id})
+                
+            elif (req.receiver_id == current_user.user_id and req.status == 'pending'):
+                sender = User.query.filter_by(user_id = req.sender_id).first()
+                requests_received.append({'user': sender, 'req_id': req.request_id})
+                
+        return render_template('friends.html', friends = users, requests_received = requests_received, requests_sent = requests_sent, avatar_url = current_user.avatar_url, user_id = current_user.user_id)
+        
+    return render_template('friends.html')
 
+
+@app.route('/friends/requests/send/<int:input_request_id>', methods = ['POST'])
+@login_required
+def send_friend_request(input_request_id):
+    
+    sender = current_user.user_id
+    receiver = input_request_id
+    
+    existingRequest = Friend_Requests.query.filter((Friend_Requests.sender_id == sender) & (Friend_Requests.receiver_id == receiver)).all()
+    existingFriendship = Friends.query.filter(((Friends.user1_id == sender) & (Friends.user2_id == receiver)) | ((Friends.user2_id == sender) & (Friends.user1_id == receiver))).all()
+    if(existingRequest or existingFriendship):
+        print("not sent")
+        return redirect(url_for('viewFriends'))
+    
+    friendRequest = Friend_Requests(sender_id = sender, receiver_id = receiver)
+    db.session.add(friendRequest)
+    db.session.commit()
+    
+    return redirect(url_for('viewFriends'))
+    
+@app.route('/friends/requests/<action>/<int:input_request_id>', methods = ['POST'])
+@login_required    
+def handle_friend_request(action, input_request_id):
+    friend_request = Friend_Requests.query.filter_by(request_id = input_request_id).first()
+    if not friend_request or friend_request.receiver_id != current_user.user_id:
+        flash("Invalid friend request.", "danger")
+        return redirect(url_for('viewFriends'))
+    
+    if action == 'accept':
+        friend_request.status = 'accepted'
+        if(friend_request.receiver_id < friend_request.sender_id):
+            new_friendship = Friends(user1_id = friend_request.receiver_id, user2_id = friend_request.sender_id)
+        elif(friend_request.sender_id < friend_request.receiver_id):
+            new_friendship = Friends(user1_id = friend_request.sender_id, user2_id = friend_request.receiver_id)
+        db.session.add(new_friendship)
+    
+    elif action == 'reject':
+        friend_request.status = 'rejected'
+        
+    db.session.commit()
+    return redirect(url_for('viewFriends'))
+    
+@app.route('/friends/search', methods = ['GET', 'POST'])
+@login_required
+def search_users():
+    query = request.args.get('query')
+    if not query:
+        return jsonify({'error': 'Query parameter is required'}), 400
+    
+    results = User.query.filter((User.username.ilike(f"%{query}%")) & (User.username != current_user.username)).limit(10).all()
+    
+    users_list = []
+    for user in results:
+        profile = Profile.query.filter(Profile.user_id == user.user_id).first()
+        friends = Friends.query.filter(((Friends.user1_id == user.user_id) & (Friends.user2_id == current_user.user_id)) | ((Friends.user1_id == current_user.user_id) &(Friends.user2_id == user.user_id))).first()
+        if friends:
+            friends = True
+        else:
+            friends = False
+        requests = Friend_Requests.query.filter(((Friend_Requests.receiver_id == user.user_id) & (Friend_Requests.sender_id == current_user.user_id)) | ((Friend_Requests.sender_id == user.user_id) & (Friend_Requests.receiver_id == current_user.user_id))).first()
+        if requests:
+            requests = True
+        else:
+            requests = False
+        users_list.append({
+            'id': user.user_id, 
+            'username': user.username,
+            'private': profile.private if profile else False,
+            'friends': friends,
+            'requests': requests
+        }) 
+
+    return jsonify(users_list)
+    
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
 SEARCH_ENDPOINT = "https://uts-ws.nlm.nih.gov/rest/search/current"
