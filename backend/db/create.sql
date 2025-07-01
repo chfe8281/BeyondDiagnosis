@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS groups (
   group_id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   creator_id INT NOT NULL,
+  creator VARCHAR(50) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   description VARCHAR(140) NOT NULL,
   FOREIGN KEY (creator_id) REFERENCES users(user_id)

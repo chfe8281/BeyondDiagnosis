@@ -30,7 +30,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import User, Profile, Friends, Friend_Requests
+from models import User, Profile, Friends, Friend_Requests, Groups
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -330,6 +330,28 @@ def search_users():
         }) 
 
     return jsonify(users_list)
+
+@app.route('/groups', methods = ['GET', 'POST'])
+@login_required
+def createGroup():
+    print("before post check")
+    if request.method == 'POST':
+        print("in post")
+        group_name = request.form['name']
+        group_description = request.form['description']
+        _creator = current_user.username
+        _creator_id = current_user.user_id
+        
+        new_group = Groups(name = group_name, creator_id = _creator_id, creator = _creator, description = group_description)
+        
+        db.session.add(new_group)
+        db.session.commit()
+        print("group added successfully")
+        group = Groups.query.filter(Groups.name == group_name).first()
+        print(group.name)
+        return render_template('groups.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url)
+
+    return render_template('groups.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url)
     
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"

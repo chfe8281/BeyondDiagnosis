@@ -46,3 +46,12 @@ class Friends(db.Model):
     user2_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), primary_key = True)
     __tableargs__ = (
         db.CheckConstraint(user1_id < user2_id, name = "check_diff_users"),)
+    
+class Groups(db.Model):
+    __tablename__ = 'groups'
+    group_id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(100), nullable = False)
+    creator_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    creator = db.Column(db.String(50), nullable = False)
+    created_at = db.Column(db.DateTime, default = datetime.now(timezone.utc))
+    description = db.Column(db.String(140), nullable = False)

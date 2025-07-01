@@ -26,43 +26,66 @@ document.addEventListener("DOMContentLoaded", function() {
   const searchInput = document.getElementById("user-search");
   const resultsDiv = document.getElementById("search_results");
 
-  searchInput.addEventListener("input", async () => {
-    const query = searchInput.value.trim();
-    if (query.length === 0) {
-      resultsDiv.innerHTML = "";
-      resultsDiv.style.display = "none";
-      return;
-    }
+  if(searchInput) {
+    searchInput.addEventListener("input", async () => {
+      const query = searchInput.value.trim();
+      if (query.length === 0) {
+        resultsDiv.innerHTML = "";
+        resultsDiv.style.display = "none";
+        return;
+      }
 
-    const response = await fetch(`friends/search?query=${encodeURIComponent(query)}`);
-    const users = await response.json();
-    console.log(users)
+      const response = await fetch(`friends/search?query=${encodeURIComponent(query)}`);
+      const users = await response.json();
+      console.log(users)
 
-    if (users.length === 0) {
-      resultsDiv.innerHTML = "<div class='dropdown-item'>No users found</div>";
-    } else {
-     
-        resultsDiv.innerHTML = users.map(user => {
-            const usernameHTML = user.private
-                ? `${user.username}`
-                : `<a href="/profile/${user.id}" class="profile-link">${user.username}</a>`;
-            const buttonHTML = user.friends
-                ? `<button class="friendReq_Button" type="button" disabled>Friends</button>`
-                : user.requests
-                    ? `<button class="friendReq_Button" type="button" disabled>Request Sent</button>`
-                    : `<button class="friendReq_Button" type="button" onclick="event.stopPropagation(); sendFriendRequest(${user.id})">
-                        Add Friend
-                        </button>`;
+      if (users.length === 0) {
+        resultsDiv.innerHTML = "<div class='dropdown-item'>No users found</div>";
+      } else {
+      
+          resultsDiv.innerHTML = users.map(user => {
+              const usernameHTML = user.private
+                  ? `${user.username}`
+                  : `<a href="/profile/${user.id}" class="profile-link">${user.username}</a>`;
+              const buttonHTML = user.friends
+                  ? `<button class="friendReq_Button" type="button" disabled>Friends</button>`
+                  : user.requests
+                      ? `<button class="friendReq_Button" type="button" disabled>Request Sent</button>`
+                      : `<button class="friendReq_Button" type="button" onclick="event.stopPropagation(); sendFriendRequest(${user.id})">
+                          Add Friend
+                          </button>`;
 
-                return `
-            <div class="dropdown-item" onclick="selectUser('${user.username}')">
-                ${usernameHTML}
-                ${buttonHTML}
-            </div>`}).join('');
-    }
+                  return `
+              <div class="dropdown-item" onclick="selectUser('${user.username}')">
+                  ${usernameHTML}
+                  ${buttonHTML}
+              </div>`}).join('');
+      }
 
-    resultsDiv.style.display = "block";
-  });
+      resultsDiv.style.display = "block";
+    });
+  }
+
+  const modal = document.getElementById('groupModal');
+  const openBtn = document.getElementById('groupModalBtn');
+  const closeBtn = document.getElementById('closeGroupModalBtn');
+  const form = document.getElementById('groupForm');
+
+  if(modal){
+    openBtn.onclick = () => {
+      modal.style.display = 'block';
+    };
+
+    closeBtn.onclick = () => {
+      modal.style.display = 'none';
+    };
+
+    window.onclick = event => {
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    };
+  }
 });
 
 function selectUser(username) {
