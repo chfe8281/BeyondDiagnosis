@@ -9,7 +9,18 @@
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
-        <button id = "groupModalBtn">Create Group</button>
+        <div class = "row">
+            <div class = "column">
+                <button id = "groupModalBtn">Create Group</button>
+            </div>
+            <div class = "column">
+                <form method="GET" action="{{ url_for('search_groups') }}">
+                    <input type="text" name="groupInput" id = "groupInput" placeholder="Search groups..." autocomplete = "off" required>
+                    <button type="submit">Search</button>
+                    <div id = "group_results" class = "dropdown"></div>
+                </form>
+            </div>
+        </div>
 
         <div id = "groupModal" class = "modal">
             <div class = "modal-content">

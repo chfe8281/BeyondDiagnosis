@@ -352,6 +352,24 @@ def createGroup():
         return render_template('groups.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url)
 
     return render_template('groups.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url)
+
+@app.route('/groups/search', methods = ['GET', 'POST'])
+@login_required
+def search_groups():
+    query = request.args.get('groupInput')
+    if not query:
+        return jsonify({'error': 'Query parameter is required'}), 400
+    
+    results = Groups.query.filter(Groups.name.ilike(f"%{query}%")).limit(10).all()
+
+    groups_list = []
+    for group in results:
+        groups_list.append({
+            'id': group.group_id, 
+            'name': group.name
+        }) 
+
+    return jsonify(groups_list)
     
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"

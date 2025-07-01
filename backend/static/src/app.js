@@ -86,9 +86,41 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     };
   }
+
+  const groupInput = document.getElementById("groupInput");
+  const groupResultsDiv = document.getElementById("group_results");
+
+  if(groupInput)
+  {
+    groupInput.addEventListener("input", async () => {
+      const query = groupInput.value.trim();
+      if (query.length === 0) {
+        groupResultsDiv.innerHTML = "";
+        groupResultsDiv.style.display = "none";
+        return;
+      }
+
+      const group_response = await fetch(`groups/search?groupInput=${encodeURIComponent(query)}`);
+      const groups = await group_response.json();
+      console.log(groups)
+
+      if (groups.length === 0) {
+        groupResultsDiv.innerHTML = "<div class='dropdown-item'>No groups found</div>";
+      } 
+      else {
+        groupResultsDiv.innerHTML = groups.map(group => {
+        return `
+              <div class="dropdown-item" onclick="selectGroup('${group.name}')">
+                  ${group.name}
+              </div>`}).join('');
+      }
+
+      groupResultsDiv.style.display = "block";
+    });
+  }
 });
 
-function selectUser(username) {
-  document.getElementById("user-search").value = username;
-  document.getElementById("search-results").style.display = "none";
+function selectGroup(name) {
+  document.getElementById("groupInput").value = name;
+  document.getElementById("group_results").style.display = "none";
 }

@@ -18,8 +18,8 @@
 }
 
 .contents{
-    margin-left: 3%;
-    margin-top: 2%;
+  margin-left: 3%;
+  margin-top: 2%;
 }
 
 #userDropdown{
@@ -180,4 +180,15 @@ label {
 
 button {
   margin-top: 15px;
+}
+
+.group_contents{
+  margin-left: 3%;
+  margin-top: 2%;
+}
+.row{
+  display: flex;
+}
+.column{
+  flex: 50%;
 }
