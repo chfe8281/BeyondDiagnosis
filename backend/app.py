@@ -30,7 +30,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import User, Profile, Friends, Friend_Requests, Groups
+from models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -324,7 +324,7 @@ def search_users():
         users_list.append({
             'id': user.user_id, 
             'username': user.username,
-            'private': profile.private if profile else False,
+            'private': profile.private if profile else True,
             'friends': friends,
             'requests': requests
         }) 
@@ -332,6 +332,37 @@ def search_users():
     return jsonify(users_list)
 
 @app.route('/groups', methods = ['GET', 'POST'])
+@login_required
+def viewGroups():
+    if request.method == 'GET':
+        groups = []
+        group_ids = GroupMembers.query.filter(GroupMembers.user_id == current_user.user_id).all()
+        for id in group_ids:
+            group = Groups.query.filter(Groups.group_id == id.group_id).first()
+            groups.append({'name': group.name, 'id': group.group_id, 'avatar': group.avatar_link})
+        
+        requests_received = []
+        groups_created = Groups.query.filter(Groups.creator_id == current_user.user_id).all()
+        group_created_id = [g.group_id for g in groups_created]
+        requests_r = GroupRequests.query.filter(GroupRequests.group_id.in_(group_created_id)).all()
+        for req in requests_r:
+            if req.status == 'pending':
+                group = next((g for g in groups_created if g.group_id == req.group_id), None)
+                user = User.query.filter(User.user_id == req.user_id).first()
+                if group:
+                    requests_received.append({'group': group, 'requester': user, 'request_id': req.group_request_id})
+           
+        requests = GroupRequests.query.filter(GroupRequests.user_id == current_user.user_id).all()
+        requests_sent = []
+        for req in requests:
+            if(req.status == 'pending'):
+                group = Groups.query.filter_by(group_id = req.group_id).first()
+                requests_sent.append({'group': group, 'req_id': req.group_request_id})
+        return render_template('groups.html', groups = groups, requests_received = requests_received, requests_sent = requests_sent, avatar_url = current_user.avatar_url, user_id = current_user.user_id)
+        
+    return render_template('groups.html')
+
+@app.route('/groups/create', methods = ['GET', 'POST'])
 @login_required
 def createGroup():
     print("before post check")
@@ -341,8 +372,10 @@ def createGroup():
         group_description = request.form['description']
         _creator = current_user.username
         _creator_id = current_user.user_id
+        _avatar_link = request.files.get('avatar_file')
+        url = upload_avatar_to_cloudinary(_avatar_link, current_user.user_id)
         
-        new_group = Groups(name = group_name, creator_id = _creator_id, creator = _creator, description = group_description)
+        new_group = Groups(name = group_name, creator_id = _creator_id, creator = _creator, description = group_description, avatar_link = url)
         
         db.session.add(new_group)
         db.session.commit()
@@ -350,8 +383,50 @@ def createGroup():
         group = Groups.query.filter(Groups.name == group_name).first()
         print(group.name)
         return render_template('groups.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url)
-
+        
     return render_template('groups.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url)
+
+@app.route('/groups/requests/send/<int:input_group_id>', methods = ['POST'])
+@login_required
+def send_group_request(input_group_id):
+    
+    user = current_user.user_id
+    group = input_group_id
+    
+    existingRequest = GroupRequests.query.filter((GroupRequests.user_id == user) & (GroupRequests.group_id == group)).all()
+    existingMember = GroupMembers.query.filter((GroupMembers.user_id == user) & (GroupMembers.group_id == group)).all()
+    if(existingRequest or existingMember):
+        print("not sent")
+        return redirect(url_for('viewGroups'))
+    
+    groupRequest = GroupRequests(user_id = user, group_id = group)
+    db.session.add(groupRequest)
+    db.session.commit()
+    
+    print("successfully requested")
+    
+    return redirect(url_for('viewGroups'))
+
+@app.route('/groups/requests/<action>/<int:input_request_id>', methods = ['POST'])
+@login_required    
+def handle_group_request(action, input_request_id):
+    group_request = GroupRequests.query.filter(GroupRequests.group_request_id == input_request_id).first()
+    group = Groups.query.filter(Groups.group_id == group_request.group_id).first()
+    
+    if not group_request or group.creator_id != current_user.user_id:
+        flash("Invalid friend request.", "danger")
+        return redirect(url_for('viewGroups'))
+    
+    if action == 'accept':
+        group_request.status = 'accepted'
+        new_group_member = GroupMembers(group_id = group.group_id, user_id = group_request.user_id)
+        db.session.add(new_group_member)
+    
+    elif action == 'reject':
+        group_request.status = 'rejected'
+        
+    db.session.commit()
+    return redirect(url_for('viewGroups'))
 
 @app.route('/groups/search', methods = ['GET', 'POST'])
 @login_required
@@ -364,12 +439,32 @@ def search_groups():
 
     groups_list = []
     for group in results:
+        created = False
+        if(group.creator_id == current_user.user_id):
+            created = True
+        member = False
+        join = GroupMembers.query.filter((GroupMembers.group_id == group.group_id) & (GroupMembers.user_id == current_user.user_id)).first()
+        if(join):
+            member = True
+        requested = False
+        existing_request = GroupRequests.query.filter((GroupRequests.group_id == group.group_id) & (GroupRequests.user_id == current_user.user_id)).first()
+        if (existing_request):
+            requested = True
         groups_list.append({
             'id': group.group_id, 
-            'name': group.name
+            'name': group.name,
+            'created': created,
+            'member': member,
+            'request': requested
         }) 
 
     return jsonify(groups_list)
+
+@app.route('/groups/profile/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def group_profile(id):
+    group_returned = Groups.query.filter(Groups.group_id == id).first()
+    return render_template('groupProfile.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url, name = group_returned.name, creator = group_returned.creator, description = group_returned.description, group_avatar = group_returned.avatar_link)
     
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"

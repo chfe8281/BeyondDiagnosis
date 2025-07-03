@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MedConnect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
+</head>
+<body>
+    {% include "components/navbar.html" %}
+    <div class = "contents">
+        <a href="{{ url_for('viewGroups') }}">Back to Groups</a>
+
+        <table class="profile_table">
+            <tr>
+                <td class = "avatar_cell" style = "width: 220px;">
+                    <img src="{{ group_avatar or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" height = "200" width = "200" id="avatar">
+                </td>
+                <td>
+                    <p><strong>Name:</strong> {{ name }}</p>
+                    <p><strong>Creator:</strong> {{ creator }}</p>
+                    <p><strong>Description:</strong> {{ description }}</p>
+                </td>
+            </tr>
+        </table>
+        
+    </div>
+
+    {% include "components/footer.html" %}
+    <script src = "../static/src/app.js"></script>
+</html>

@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from sqlalchemy.dialects.postgresql import ARRAY
 from datetime import datetime, timezone
+from sqlalchemy import PrimaryKeyConstraint
 
 from __init__ import db
 
@@ -27,7 +28,7 @@ class Profile(db.Model):
     interests = db.Column(ARRAY(db.Text))
     conditions = db.Column(ARRAY(db.Text))
     avatar_url = db.Column(db.Text)
-    private = db.Column(db.Boolean, default = False, nullable = False)
+    private = db.Column(db.Boolean, default = True, nullable = False)
 
     def __repr__(self):
         return f'<Profile user_id={self.user_id}, status={self.status}>'
@@ -54,4 +55,25 @@ class Groups(db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     creator = db.Column(db.String(50), nullable = False)
     created_at = db.Column(db.DateTime, default = datetime.now(timezone.utc))
+    avatar_link = db.Column(db.Text)
     description = db.Column(db.String(140), nullable = False)
+    
+class GroupRequests(db.Model):
+    __tablename__ = 'group_requests'
+    group_request_id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    group_id = db.Column(db.Integer, db.ForeignKey('groups.group_id'))
+    requested_at = db.Column(db.DateTime, default = datetime.now(timezone.utc))
+    status = db.Column(db.String(20), db.CheckConstraint("status IN ('pending', 'accepted', 'rejected')"), default = 'pending', nullable = False)
+    
+    
+class GroupMembers(db.Model):
+    __tablename__ = 'groups_to_users'
+    group_id = db.Column(db.Integer, db.ForeignKey('groups.group_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    joined_at = db.Column(db.DateTime, default = datetime.now(timezone.utc))
+    
+    __table_args__ = (
+        PrimaryKeyConstraint('group_id', 'user_id'),
+    )
+    

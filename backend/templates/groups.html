@@ -12,10 +12,73 @@
         <div class = "row">
             <div class = "column">
                 <button id = "groupModalBtn">Create Group</button>
+                <h3>Groups</h3>
+                <table id = "friends_table">
+                    {% if groups %}
+                        <tr>
+                            <td colspan = "2"><b>Groups</b></td>
+                        </tr>
+                        {% endif %}
+                    {% for group in groups %}
+                        <tr>
+                            <td class = "avatar_cell"><img src="{{ group.avatar or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
+                            <td>{{ group.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <h3>Groups Requested</h3>
+                <table id = "friends_table">
+                    {% if requests_sent %}
+                        <tr>
+                            <td colspan = "2"><b>Groups Requested</b></td>
+                        </tr>
+                        {% endif %}
+                    {% for sent in requests_sent %}
+                        <tr>
+                            <td class = "avatar_cell"><img src="{{ sent.group.avatar_link or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
+                            <td>{{ sent.group.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <h3>Pending Requests</h3>
+                <table id="friends_table">
+                    <thead>
+                        <tr>
+                            {% if requests_received %}
+                                <td><b>Group</b></td>
+                                <td><b>Requester</b></td>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for received in requests_received %}
+                        <tr>
+                            <td>
+                                <img src="{{ received.group.avatar_link or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
+                                {{ received.group.name }}
+                            </td>
+                            <td>
+                                <img src="{{ received.requester.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
+                                {{ received.requester.username }}
+                            </td>
+                            <td class = "avatar_cell">
+                                <form method="POST" action="{{ url_for('handle_group_request', action='accept', input_request_id=received.request_id) }}">
+                                    <button class = "friendReq_Button" type="submit">Accept</button>
+                                </form>
+                            </td>
+                            <td class = "avatar_cell">
+                                <form method="POST" action="{{ url_for('handle_group_request', action='reject', input_request_id=received.request_id) }}">
+                                    <button class = "friendReq_Button" type="submit">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
             <div class = "column">
-                <form method="GET" action="{{ url_for('search_groups') }}">
-                    <input type="text" name="groupInput" id = "groupInput" placeholder="Search groups..." autocomplete = "off" required>
+                <form method="GET" action="{{ url_for('search_groups') }}" onsubmit="return false;">
+                    <input type="text" name="groupInput" id = "groupInput" placeholder="Search groups..." autocomplete = "off">
                     <button type="submit">Search</button>
                     <div id = "group_results" class = "dropdown"></div>
                 </form>
@@ -26,12 +89,12 @@
             <div class = "modal-content">
                 <span class = "close" id = "closeGroupModalBtn" >&times;</span>
                 <h2>Create Group</h2>
-                <form id = "groupForm" method = "POST" action="{{ url_for('createGroup') }}">
+                <form id = "groupForm" method = "POST" enctype="multipart/form-data" action="{{ url_for('createGroup') }}">
                     <label for="name">Group Name:</label>
                     <input type = "text" id = "name" name = "name" required>
                     <label for="description">Description:</label>
                     <textarea id = "description" name = "description" rows = "4" required></textarea>
-
+                    <input type = "file" id = "fileInput" name = "avatar_file" accept = "image/*" required>
                     <button type = "submit">Submit</button>
                 </form>
             </div>

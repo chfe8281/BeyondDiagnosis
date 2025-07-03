@@ -22,6 +22,24 @@ async function sendFriendRequest(userId) {
   }
 }
 
+async function sendGroupRequest(groupId) {
+  try {
+    const response = await fetch(`/groups/requests/send/${groupId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (response.ok) {
+      window.location.href = '/groups';
+    } else {
+      alert("Failed to send request");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error occurred");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   const searchInput = document.getElementById("user-search");
   const resultsDiv = document.getElementById("search_results");
@@ -46,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function() {
           resultsDiv.innerHTML = users.map(user => {
               const usernameHTML = user.private
                   ? `${user.username}`
-                  : `<a href="/profile/${user.id}" class="profile-link">${user.username}</a>`;
+                  : `<a href="/profile/${user.id}" class="profile-link" onclick="event.stopPropagation()">${user.username}</a>`;
               const buttonHTML = user.friends
                   ? `<button class="friendReq_Button" type="button" disabled>Friends</button>`
                   : user.requests
@@ -56,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
                           </button>`;
 
                   return `
-              <div class="dropdown-item" onclick="selectUser('${user.username}')">
+              <div class="dropdown-item">
                   ${usernameHTML}
                   ${buttonHTML}
               </div>`}).join('');
@@ -100,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
       }
 
-      const group_response = await fetch(`groups/search?groupInput=${encodeURIComponent(query)}`);
+      const group_response = await fetch(`/groups/search?groupInput=${encodeURIComponent(query)}`);
       const groups = await group_response.json();
       console.log(groups)
 
@@ -109,9 +127,18 @@ document.addEventListener("DOMContentLoaded", function() {
       } 
       else {
         groupResultsDiv.innerHTML = groups.map(group => {
+          const button = group.created
+                  ? `<button class="friendReq_Button" type="button" disabled>Created</button>`
+                  : group.member
+                      ? `<button class="friendReq_Button" type="button" disabled>Member</button>`
+                      : group.request
+                        ? `<button class="friendReq_Button" type="button" disabled>Requested</button>`
+                        : `<button class="friendReq_Button" type="button" onclick="event.stopPropagation(); sendGroupRequest(${group.id})">Request to Join</button>`;
+
         return `
               <div class="dropdown-item" onclick="selectGroup('${group.name}')">
-                  ${group.name}
+                  <a href="/groups/profile/${group.id}" class="profile-link">${group.name}</a>
+                  ${button}
               </div>`}).join('');
       }
 
@@ -123,4 +150,9 @@ document.addEventListener("DOMContentLoaded", function() {
 function selectGroup(name) {
   document.getElementById("groupInput").value = name;
   document.getElementById("group_results").style.display = "none";
+}
+
+function selectUser(name) {
+  document.getElementById("user-search").value = name;
+  document.getElementById("search_results").style.display = "none";
 }
