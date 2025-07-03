@@ -1,6 +1,7 @@
 DROP TABLE comments;
 DROP TABLE posts;
 DROP TABLE groups_to_users;
+DROP TABLE group_requests;
 DROP TABLE groups;
 DROP TABLE messages;
 DROP TABLE friends;
@@ -67,9 +68,21 @@ CREATE TABLE IF NOT EXISTS groups (
   group_id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   creator_id INT NOT NULL,
+  creator VARCHAR(50) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   description VARCHAR(140) NOT NULL,
+  avatar_link TEXT,
   FOREIGN KEY (creator_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS group_requests (
+  group_request_id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  group_id INT NOT NULL,
+  requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status VARCHAR(20) CHECK (status in ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (group_id) REFERENCES groups(group_id)
 );
 
 
@@ -78,7 +91,8 @@ CREATE TABLE IF NOT EXISTS groups_to_users (
   user_id INT NOT NULL,
   joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(user_id),
-  FOREIGN KEY (group_id) REFERENCES groups(group_id)
+  FOREIGN KEY (group_id) REFERENCES groups(group_id),
+  PRIMARY KEY (group_id, user_id)
 );
 
 

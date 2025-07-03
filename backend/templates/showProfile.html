@@ -9,40 +9,24 @@
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
-        <p>{{name}}'s Profile</p>
-        <table class = "profile_table">
+        <table class="profile_table">
             <tr>
-                <td><p>Name</p></td>
-                <td>{{name}}</td>
-            </tr>
-            <tr>
-                <td>Bio</td>
-                <td>{{bio}}</td>
-            </tr>
-            <tr>
-                <td>User Status</td>
-                <td>{{status}}</td>
-            </tr>
-            <tr>
-                <td>Location</td>
-                <td>{{location}}</td>
-            </tr>
-            <tr>
-                <td>Interests</td>
-                <td>{{interests}}</td>
-            </tr>
-            <tr>
-                <td>Conditions</td>
-                <td>{{conditions}}</td>
-            </tr>
-            <tr>
-                <td>Private</td>
-                <td>{{"Yes" if private else "No" }}</td>
+                <td class = "avatar_cell" style = "width: 220px;">
+                    <img src="{{ users_avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" height = "200" width = "200" id="avatar">
+                </td>
+                <td>
+                    <p><strong>Name:</strong> {{ name }}</p>
+                    <p><strong>Bio:</strong> {{ bio }}</p>
+                    <p><strong>User Status:</strong> {{ status }}</p>
+                    <p><strong>Location:</strong> {{ location }}</p>
+                    <p><strong>Interests:</strong> {{ interests }}</p>
+                    <p><strong>Conditions</strong>:</strong> {{ conditions }}</p>
+                    <p><strong>Private:</strong> {{"Yes" if private else "No" }}</p>
+                </td>
             </tr>
         </table>
-        <img src = "{{users_avatar_url}}" width = 10% height = 10%>
         {% if edit %}
-            <a href = "{{ url_for('createProfile') }}">Edit Profile</a>
+            <a class = "button-link" href = "{{ url_for('createProfile') }}">Edit Profile</a>
             {% else %}
                 {% if friends %}
                     <button class="friendReq_Button" type="button" disabled>Friends</button>

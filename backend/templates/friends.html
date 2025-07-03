@@ -9,48 +9,54 @@
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
-        <form method="GET" action="{{ url_for('search_users') }}">
-            <input type="text" name="query"id = "user-search" placeholder="Search users..." autocomplete = "off" required>
-            <button type="submit">Search</button>
-            <div id = "search_results" class = "dropdown"></div>
-        </form>
-        <h3>Friends</h3>
-        <table id = "friends_table">
-            {% for friend in friends %}
-                <tr>
-                    <td class = "avatar_cell"><img src="{{ friend.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
-                    <td>{{ friend.username }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-        <h3>Pending Requests</h3>
-        <table id = "friends_table">
-            {% for received in requests_received %}
-                <tr>
-                    <td class = "avatar_cell"><img src="{{ received.user.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
-                    <td class = "avatar_cell">{{ received.user.username }}</td>
-                    <td class = "avatar_cell">
-                        <form method="POST" action="{{ url_for('handle_friend_request', action='accept', input_request_id=received.req_id) }}">
-                            <button class = "friendReq_Button" type="submit">Accept</button>
-                        </form>
-                    </td>
-                    <td class = "avatar_cell">
-                        <form method="POST" action="{{ url_for('handle_friend_request', action='reject', input_request_id=received.req_id) }}">
-                            <button class = "friendReq_Button" type="submit">Reject</button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-        <h3>Requests Sent</h3>
-        <table id = "friends_table">
-            {% for sent in requests_sent %}
-                <tr>
-                    <td class = "avatar_cell"><img src="{{ sent.user.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
-                    <td>{{ sent.user.username }}</td>
-                </tr>
-            {% endfor %}
-        </table>
+        <div class = "row">
+            <div class = "column">
+                <h3>Friends</h3>
+                <table id = "friends_table">
+                    {% for friend in friends %}
+                        <tr>
+                            <td class = "avatar_cell"><img src="{{ friend.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
+                            <td>{{ friend.username }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <h3>Pending Requests</h3>
+                <table id = "friends_table">
+                    {% for received in requests_received %}
+                        <tr>
+                            <td class = "avatar_cell"><img src="{{ received.user.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
+                            <td class = "avatar_cell">{{ received.user.username }}</td>
+                            <td class = "avatar_cell">
+                                <form method="POST" action="{{ url_for('handle_friend_request', action='accept', input_request_id=received.req_id) }}">
+                                    <button class = "friendReq_Button" type="submit">Accept</button>
+                                </form>
+                            </td>
+                            <td class = "avatar_cell">
+                                <form method="POST" action="{{ url_for('handle_friend_request', action='reject', input_request_id=received.req_id) }}">
+                                    <button class = "friendReq_Button" type="submit">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <h3>Requests Sent</h3>
+                <table id = "friends_table">
+                    {% for sent in requests_sent %}
+                        <tr>
+                            <td class = "avatar_cell"><img src="{{ sent.user.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
+                            <td>{{ sent.user.username }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class = "column">
+                <form method="GET" action="{{ url_for('search_users') }}" onsubmit="return false;">
+                    <input type="text" name="query" id = "user-search" placeholder="Search users..." autocomplete = "off">
+                    <button type="submit">Search</button>
+                    <div id = "search_results" class = "dropdown"></div>
+                </form>
+            </div>
+        </div>
     </div>
 
     {% include "components/footer.html" %}
