@@ -218,7 +218,7 @@ button {
 
 .button-link{
   display: inline-block;
-  padding: 10px 20px;
+  padding: 8px 20px;
   background-color: #7160ac;  /* Bootstrap blue */
   color: white;
   text-decoration: none;
@@ -236,7 +236,7 @@ button {
   width: 50%;
   height: 100%;
   margin: auto;
-  margin-top: 5%;
+  margin-top: 2.5%;
   border-radius: 5px;
 }
 
