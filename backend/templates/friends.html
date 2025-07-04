@@ -12,20 +12,28 @@
         <div class = "row">
             <div class = "column">
                 <h3>Friends</h3>
-                <table id = "friends_table">
+                <table id = "groups_table">
                     {% for friend in friends %}
                         <tr>
-                            <td class = "avatar_cell"><img src="{{ friend.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
-                            <td>{{ friend.username }}</td>
+                            <td>
+                                <div class = "user_info">
+                                    <img src="{{ friend.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
+                                    <span>{{ friend.username }}</span>
+                                </div>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>
                 <h3>Pending Requests</h3>
-                <table id = "friends_table">
+                <table id = "groups_table">
                     {% for received in requests_received %}
                         <tr>
-                            <td class = "avatar_cell"><img src="{{ received.user.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
-                            <td class = "avatar_cell">{{ received.user.username }}</td>
+                            <td>
+                                <div class = "user_info">
+                                    <img src="{{ received.user.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
+                                    <span>{{ received.user.username }}</span>
+                                </div>
+                            </td>
                             <td class = "avatar_cell">
                                 <form method="POST" action="{{ url_for('handle_friend_request', action='accept', input_request_id=received.req_id) }}">
                                     <button class = "friendReq_Button" type="submit">Accept</button>
@@ -40,11 +48,15 @@
                     {% endfor %}
                 </table>
                 <h3>Requests Sent</h3>
-                <table id = "friends_table">
+                <table id = "groups_table">
                     {% for sent in requests_sent %}
                         <tr>
-                            <td class = "avatar_cell"><img src="{{ sent.user.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
-                            <td>{{ sent.user.username }}</td>
+                            <td>
+                                <div class = "user_info">
+                                    <img src="{{ sent.user.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
+                                    <span>{{ sent.user.username }}</span>
+                                </div>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>

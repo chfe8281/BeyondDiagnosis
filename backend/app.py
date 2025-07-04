@@ -382,9 +382,9 @@ def createGroup():
         print("group added successfully")
         group = Groups.query.filter(Groups.name == group_name).first()
         print(group.name)
-        return render_template('groups.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url)
+        return redirect(url_for('viewGroups'))
         
-    return render_template('groups.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url)
+    return redirect(url_for('viewGroups'))
 
 @app.route('/groups/requests/send/<int:input_group_id>', methods = ['POST'])
 @login_required
