@@ -40,6 +40,7 @@ td{
 
 #avatar{
   border: 2px solid rgb(55, 50, 62);
+  object-fit: contain;
 }
 
 .avatar_cell{
@@ -131,6 +132,10 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+#groupModalBtn{
+  margin-bottom: 3%;
+}
+
 .modal {
   display: none;
   position: fixed;
@@ -202,24 +207,48 @@ button {
 }
 
 #friends_table {
-  width: 25%;
-  table-layout: fixed; /* Prevent cells from growing too wide */
+  width: 100%;
+  table-layout: auto; /* Prevent cells from growing too wide */
   border-collapse: collapse;
 }
 
 #friends_table td, th {
-  padding: 12px;
+  padding: 1%;
   border: 1px solid #111010;
   word-wrap: break-word;     /* Allow long words to break */
   overflow-wrap: break-word; /* Modern alternative */
   overflow: hidden;          /* Hide overflow if needed */
   vertical-align: middle;    /* Vertically center content */
+  text-align: center;
+}
+
+.user_info{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 5px;
+}
+
+.groups_table{
+  width: 50%;
+  table-layout: auto;
+  border-collapse: collapse;
+}
+
+.groups_table td, th {
+  border: 1px solid #111010;
+  word-wrap: break-word;     /* Allow long words to break */
+  overflow-wrap: break-word; /* Modern alternative */
+  overflow: hidden;          /* Hide overflow if needed */
+  vertical-align: middle;    /* Vertically center content */
+  text-align: center;
 }
 
 .button-link{
   display: inline-block;
-  padding: 10px 20px;
-  background-color: #7160ac;  /* Bootstrap blue */
+  padding: 8px 20px;
+  background-color: #7662b0;  /* Bootstrap blue */
   color: white;
   text-decoration: none;
   border: 2px solid #010c18; 
@@ -236,7 +265,7 @@ button {
   width: 50%;
   height: 100%;
   margin: auto;
-  margin-top: 5%;
+  margin-top: 2.5%;
   border-radius: 5px;
 }
 

@@ -11,37 +11,53 @@
     <div class = "contents">
         <div class = "row">
             <div class = "column">
-                <button id = "groupModalBtn">Create Group</button>
+                <button class = "button-link" id = "groupModalBtn">Create Group</button>
                 <h3>Groups</h3>
-                <table id = "friends_table">
+                <table id = "groups_table">
                     {% if groups %}
                         <tr>
-                            <td colspan = "2"><b>Groups</b></td>
+                            <td colspan = "2">
+                                <div class = "user_info">
+                                    <b>Groups</b>
+                                </div>
+                            </td>
                         </tr>
                         {% endif %}
                     {% for group in groups %}
                         <tr>
-                            <td class = "avatar_cell"><img src="{{ group.avatar or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
-                            <td>{{ group.name }}</td>
+                            <td>
+                                <div class = "user_info">
+                                    <img src="{{ group.avatar or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
+                                    <span>{{ group.name }}</span>
+                                </div>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>
                 <h3>Groups Requested</h3>
-                <table id = "friends_table">
+                <table id = "groups_table">
                     {% if requests_sent %}
                         <tr>
-                            <td colspan = "2"><b>Groups Requested</b></td>
+                            <td colspan = "2">
+                                <div class = "user_info">
+                                    <b>Groups Requested</b>
+                                </div>
+                            </td>
                         </tr>
                         {% endif %}
                     {% for sent in requests_sent %}
                         <tr>
-                            <td class = "avatar_cell"><img src="{{ sent.group.avatar_link or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar"></td>
-                            <td>{{ sent.group.name }}</td>
+                            <td>
+                                <div class = "user_info">
+                                    <img src="{{ sent.group.avatar_link or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
+                                    {{ sent.group.name }}
+                                </div>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>
                 <h3>Pending Requests</h3>
-                <table id="friends_table">
+                <table id="groups_table">
                     <thead>
                         <tr>
                             {% if requests_received %}
@@ -54,12 +70,16 @@
                         {% for received in requests_received %}
                         <tr>
                             <td>
-                                <img src="{{ received.group.avatar_link or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
-                                {{ received.group.name }}
+                                <div class = "user_info">
+                                    <img src="{{ received.group.avatar_link or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
+                                    <span>{{ received.group.name }}</span>
+                                </div>
                             </td>
                             <td>
-                                <img src="{{ received.requester.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
-                                {{ received.requester.username }}
+                                <div class = "user_info">
+                                    <img src="{{ received.requester.avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" width="32" height="32" id = "avatar">
+                                    <span>{{ received.requester.username }}</span>
+                                </div>
                             </td>
                             <td class = "avatar_cell">
                                 <form method="POST" action="{{ url_for('handle_group_request', action='accept', input_request_id=received.request_id) }}">
@@ -79,7 +99,7 @@
             <div class = "column">
                 <form method="GET" action="{{ url_for('search_groups') }}" onsubmit="return false;">
                     <input type="text" name="groupInput" id = "groupInput" placeholder="Search groups..." autocomplete = "off">
-                    <button type="submit">Search</button>
+                    <button type="submit" class = "button-link" style = "padding: 0.5% 1%;">Search</button>
                     <div id = "group_results" class = "dropdown"></div>
                 </form>
             </div>
