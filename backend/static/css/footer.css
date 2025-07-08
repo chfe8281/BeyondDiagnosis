@@ -40,6 +40,7 @@ td{
 
 #avatar{
   border: 2px solid rgb(55, 50, 62);
+  object-fit: contain;
 }
 
 .avatar_cell{
@@ -129,6 +130,10 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+#groupModalBtn{
+  margin-bottom: 3%;
 }
 
 .modal {
@@ -243,7 +248,7 @@ button {
 .button-link{
   display: inline-block;
   padding: 8px 20px;
-  background-color: #7160ac;  /* Bootstrap blue */
+  background-color: #7662b0;  /* Bootstrap blue */
   color: white;
   text-decoration: none;
   border: 2px solid #010c18; 

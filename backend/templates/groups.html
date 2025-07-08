@@ -11,7 +11,7 @@
     <div class = "contents">
         <div class = "row">
             <div class = "column">
-                <button id = "groupModalBtn">Create Group</button>
+                <button class = "button-link" id = "groupModalBtn">Create Group</button>
                 <h3>Groups</h3>
                 <table id = "groups_table">
                     {% if groups %}
@@ -99,7 +99,7 @@
             <div class = "column">
                 <form method="GET" action="{{ url_for('search_groups') }}" onsubmit="return false;">
                     <input type="text" name="groupInput" id = "groupInput" placeholder="Search groups..." autocomplete = "off">
-                    <button type="submit">Search</button>
+                    <button type="submit" class = "button-link" style = "padding: 0.5% 1%;">Search</button>
                     <div id = "group_results" class = "dropdown"></div>
                 </form>
             </div>

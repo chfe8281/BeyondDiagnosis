@@ -64,7 +64,7 @@
             <div class = "column">
                 <form method="GET" action="{{ url_for('search_users') }}" onsubmit="return false;">
                     <input type="text" name="query" id = "user-search" placeholder="Search users..." autocomplete = "off">
-                    <button type="submit">Search</button>
+                    <button type="submit" class = "button-link" style = "padding: 0.5% 1%;">Search</button>
                     <div id = "search_results" class = "dropdown"></div>
                 </form>
             </div>
