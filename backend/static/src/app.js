@@ -156,3 +156,16 @@ function selectUser(name) {
   document.getElementById("user-search").value = name;
   document.getElementById("search_results").style.display = "none";
 }
+
+document.getElementById('fileInput').addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById('imagePreview');
+            img.src = e.target.result;
+            img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
