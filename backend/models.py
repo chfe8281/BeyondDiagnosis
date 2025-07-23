@@ -77,3 +77,11 @@ class GroupMembers(db.Model):
         PrimaryKeyConstraint('group_id', 'user_id'),
     )
     
+class Posts(db.Model):
+    __tablename__ = 'posts'
+    post_id = db.Column(db.Integer, primary_key = True)
+    creator_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    content = db.Column(db.String(200), nullable = False)
+    time_posted = db.Column(db.DateTime, default = datetime.now(timezone.utc))
+    image_url = db.Column(db.Text)
+    group_id = db.Column(db.Integer, db.ForeignKey('groups.group_id'))
