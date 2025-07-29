@@ -30,7 +30,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers
+from models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -44,10 +44,12 @@ with app.app_context():
     except Exception as e:
         print("❌ Failed to connect:", e)
 
+# SPLASH PAGE:
 @app.route('/', methods=['GET', 'POST'])
 def splash():
     return render_template('splash.html')
-    
+
+# LOGIN/REGISTER:
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     invalid = False
@@ -106,16 +108,63 @@ def login():
 
     return render_template('login.html', invalid = invalid, flag = message)
 
+# DASHBOARD:
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dash():
+    # get all posts where group_id is a group current user is in, or creator_id is a friend of current user.
+    
     return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url, user_id = current_user.user_id)
 
+@app.route('/dashboard/post', methods=['GET', 'POST'])
+@login_required
+def createPost():
+    if request.method == 'POST':
+        caption = request.form['caption']
+        group_id = request.form['group_id']
+        file = request.files['image_file']
+        url = upload_avatar_to_cloudinary(file, current_user.user_id)
+        
+        new_post = Posts(creator_id = current_user.user_id, content = caption, image_url = url, group_id = group_id)
+        
+        db.session.add(new_post)
+        db.session.commit()
+        
+        post_ret = Posts.query.filter_by(content = caption).first()
+        if post_ret.post_id:
+            print("Post created!")
+        else:
+            print("Error")
+        
+        return redirect(url_for('dash'))
+    return redirect(url_for('dash'))
+    
+@app.route('/dashboard/search_joined_groups', methods=['GET'])
+@login_required
+def search_joined_groups():
+    query = request.args.get('groupId', '').strip()
+    if len(query) < 2:
+        # Return empty list if query too short (matches your JS condition)
+        return jsonify([])
 
+    # Query groups where current_user is a member AND group name matches query (case-insensitive)
+    results = (
+        Groups.query
+        .join(GroupMembers, Groups.group_id == GroupMembers.group_id)
+        .filter(
+            GroupMembers.user_id == current_user.user_id,
+            Groups.name.ilike(f"%{query}%")
+        )
+        .limit(10)
+        .all()
+    )
 
+    groups = [{'id': group.group_id, 'name': group.name} for group in results]
+    return jsonify(groups)
+    
+
+# IMAGE UPLOAD:
 ALLOWED_EXTENSIONS = ['png', 'jpeg', 'jpg']
-
-
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -139,6 +188,7 @@ def upload_avatar_to_cloudinary(_file, user_id):
             print("Cloudinary upload error:", e)
             return None
         
+# PROFILE:
 @app.route('/createProfile', methods=['GET', 'POST'])
 @login_required
 def createProfile():
@@ -227,6 +277,7 @@ def showProfile(id):
         return render_template('showProfile.html', friends = friends, requests = requests, edit = edit, name = user.name, bio = profile.bio, status = profile.status, location = profile.location, interests = ", ".join(profile.interests), conditions = ", ".join(profile.conditions), users_avatar_url = user.avatar_url, avatar_url = current_user.avatar_url, private = profile.private, other_users_id = id, user_id = current_user.user_id)
     return render_template('showProfile.html')
     
+# FRIENDS:
 @app.route('/friends', methods = ['GET', 'POST'])
 @login_required
 def viewFriends():
@@ -331,6 +382,7 @@ def search_users():
 
     return jsonify(users_list)
 
+# GROUPS:
 @app.route('/groups', methods = ['GET', 'POST'])
 @login_required
 def viewGroups():
@@ -378,6 +430,9 @@ def createGroup():
         new_group = Groups(name = group_name, creator_id = _creator_id, creator = _creator, description = group_description, avatar_link = url)
         
         db.session.add(new_group)
+        new_id = Groups.query.filter(Groups.name == group_name).first().group_id
+        new_member = GroupMembers(group_id = new_id, user_id = current_user.user_id)
+        db.session.add(new_member)
         db.session.commit()
         print("group added successfully")
         group = Groups.query.filter(Groups.name == group_name).first()
@@ -543,6 +598,7 @@ def index():
 
     return render_template('index.html', results=search_results, error=error)
 
+# LOGOUT:
 @app.route('/logout', methods = ['GET', 'POST'])
 @login_required
 def logout():

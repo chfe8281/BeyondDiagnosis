@@ -15,7 +15,13 @@
         <div id = "groupModal" class = "modal">
             <div class = "modal-content">
                 <span class = "close" id = "closeGroupModalBtn" >&times;</span>
-                <form id = "postForm" method = "POST" enctype="multipart/form-data" action="{{ url_for('createGroup') }}">
+                <form method="GET" action="{{ url_for('search_joined_groups') }}" onsubmit="return false;">
+                    <input type="text" name="groupId" id="groupId" placeholder="Search groups..." autocomplete="off">
+                    <button type="submit" style = "display: none;"></button>
+                    <div id="group_results" class="dropdown"></div>
+                </form>
+                <form id = "postForm" method = "POST" enctype="multipart/form-data" action="{{ url_for('createPost') }}">
+                    <input type="hidden" name="group_id" id="selected_group_id">
                     <input type="file" id="fileInput" name="image_file" accept="image/*" class="custom-file-input" required>
                     <div id = "imagePost">
                         <div id = "imagePrev">
