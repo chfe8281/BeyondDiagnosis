@@ -170,6 +170,8 @@ def dash():
             owner = False
             if post.creator_id == current_user.user_id:
                 owner = True
+            elif group.creator_id == current_user.user_id:
+                owner = True
             dash_posts.append({'post': post, 'group': group, 'creator': user, 'timestamp': timestamp, 'owner': owner})
         
         return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url, user_id = current_user.user_id, dash_posts = dash_posts)
