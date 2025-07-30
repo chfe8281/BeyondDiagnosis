@@ -167,7 +167,10 @@ def dash():
             group = Groups.query.filter(Groups.group_id == post.group_id).first()
             user = User.query.filter(User.user_id == post.creator_id).first()
             timestamp = time_since(post.time_posted)
-            dash_posts.append({'post': post, 'group': group, 'creator': user, 'timestamp': timestamp})
+            owner = False
+            if post.creator_id == current_user.user_id:
+                owner = True
+            dash_posts.append({'post': post, 'group': group, 'creator': user, 'timestamp': timestamp, 'owner': owner})
         
         return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url, user_id = current_user.user_id, dash_posts = dash_posts)
     return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url, user_id = current_user.user_id)
@@ -193,6 +196,18 @@ def createPost():
             print("Error")
         
         return redirect(url_for('dash'))
+    return redirect(url_for('dash'))
+
+@app.route('/dashboard/post/delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def deletePost(id):
+    post = Posts.query.get(id)
+    if post:
+        db.session.delete(post)
+        db.session.commit()
+    else:
+        print("post not found")
+        
     return redirect(url_for('dash'))
     
 @app.route('/dashboard/search_joined_groups', methods=['GET'])

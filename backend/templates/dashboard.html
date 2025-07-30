@@ -42,6 +42,9 @@
             <div class = "column-large">
                 {% for dp in dash_posts %}
                     <div class = "postCard">
+                        {% if dp.owner %}
+                            <a href="/dashboard/post/delete/{{ dp.post.post_id }}" class="button-link">Delete</a>
+                        {% endif %}
                         <img id = "postImg" src = "{{ dp.post.image_url }}">
                         <div class = "postText">
                             <p><a href="/profile/{{ dp.creator.user_id }}" class="links" onclick="event.stopPropagation()">{{ dp.creator.username }}</a> {{ dp.post.content }}</p>
