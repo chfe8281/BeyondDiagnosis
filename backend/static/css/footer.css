@@ -20,6 +20,7 @@
 .contents{
   margin-left: 3%;
   margin-top: 2%;
+  margin-bottom: 5%;
 }
 
 #userDropdown{
@@ -223,6 +224,14 @@ button {
   flex: 50%;
 }
 
+.column-small{
+  flex: 15%;
+}
+
+.column-large{
+  flex: 85%;
+}
+
 .profile_table {
   width: 100%;
   max-width: 50%;
@@ -305,4 +314,43 @@ button {
 .container {
   text-align: center;
   padding: 8%;
+}
+
+#postImg{
+  width: 100%;
+  height: 75%;
+  object-fit: contain;
+  display: block;
+  border: 1px solid #ddd;
+}
+
+.postCard{
+  box-shadow: 0 4px 8px 8px rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 50%;
+  height: 100%;
+  padding: inherit;
+  margin-top: 2.5%;
+  margin-left: 15%;
+  display: flex;
+  flex-direction: column;
+}
+
+.postText{
+  max-height: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.links{
+  color:#010c18;
+  font-weight: bold;
+}
+
+.postBottom{
+  display: flex;
+}
+
+#timestamp{
+  margin-left: auto;
 }

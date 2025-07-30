@@ -3,7 +3,7 @@ import requests
 import os
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-from sqlalchemy import text
+from sqlalchemy import text, desc
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
@@ -12,6 +12,9 @@ import cloudinary.uploader
 import cloudinary.api
 from cloudinary.utils import cloudinary_url
 import traceback
+from sqlalchemy import or_
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 
 # Load .env file contents into environment variables
@@ -109,11 +112,64 @@ def login():
     return render_template('login.html', invalid = invalid, flag = message)
 
 # DASHBOARD:
+def time_since(time_input):
+    mst = ZoneInfo("America/Denver")
+    now = datetime.now(mst)
+
+    # If `time_input` is naive, localize it to MST
+    if time_input.tzinfo is None:
+        time_input = time_input.replace(tzinfo=mst)
+    else:
+        time_input = time_input.astimezone(mst)
+    diff = now - time_input
+    seconds = diff.total_seconds()
+    minutes = seconds // 60
+    hours = minutes // 60
+    days = diff.days
+    
+    if seconds < 60:
+        return "less than 1 min"
+    elif minutes < 60:
+        return f"{int(minutes)} minutes ago"
+    elif hours < 24:
+        return f"{int(hours)} hours ago"
+    elif days < 7:
+        return f"{int(days)} days ago"
+    else:
+        return time_input.strftime("%b %d, %Y")
+    
+    
+    
+    
+
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dash():
     # get all posts where group_id is a group current user is in, or creator_id is a friend of current user.
-    
+    if request.method == 'GET':
+        friends = Friends.query.filter((Friends.user1_id == current_user.user_id)|(Friends.user2_id == current_user.user_id)).all()
+        friend_ids = []
+        for friend in friends:
+            if friend.user1_id == current_user.user_id:
+                friend_ids.append(friend.user2_id)
+            else:
+                friend_ids.append(friend.user1_id)
+        groups = GroupMembers.query.filter(GroupMembers.user_id == current_user.user_id).all()
+        group_ids = []
+        for group in groups:
+            group_ids.append(group.group_id)
+        posts = Posts.query.filter(or_(
+            Posts.creator_id.in_(friend_ids),
+            Posts.group_id.in_(group_ids)
+        )).order_by(desc(Posts.time_posted))
+        dash_posts = []
+        for post in posts:
+            group = Groups.query.filter(Groups.group_id == post.group_id).first()
+            user = User.query.filter(User.user_id == post.creator_id).first()
+            timestamp = time_since(post.time_posted)
+            dash_posts.append({'post': post, 'group': group, 'creator': user, 'timestamp': timestamp})
+        
+        return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url, user_id = current_user.user_id, dash_posts = dash_posts)
     return render_template('dashboard.html', user = current_user.name, avatar_url = current_user.avatar_url, user_id = current_user.user_id)
 
 @app.route('/dashboard/post', methods=['GET', 'POST'])
