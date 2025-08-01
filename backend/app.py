@@ -594,7 +594,24 @@ def search_groups():
 def group_profile(id):
     group_returned = Groups.query.filter(Groups.group_id == id).first()
     return render_template('groupProfile.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url, name = group_returned.name, creator = group_returned.creator, description = group_returned.description, group_avatar = group_returned.avatar_link)
+
+@app.route('/messages', methods = ['GET', 'POST'])
+@login_required
+def viewMessageBoard():
+    friends1 = Friends.query.filter(Friends.user1_id == current_user.user_id).all()
+    friends2 = Friends.query.filter(Friends.user2_id == current_user.user_id).all()
+    friend_ids = [f.user2_id for f in friends1] + [f.user1_id for f in friends2]
+    friend_message = []
+    for id in friend_ids:
+        friend = User.query.filter(User.user_id == id).first()
+        last_message = Messages.query.filter(((Messages.sender_id == current_user.user_id) & (Messages.receiver_id == id))|((Messages.receiver_id == current_user.user_id) & (Messages.sender_id == id))).order_by(Messages.time_sent.desc()).first()
+        if last_message:
+            last_message.content = fernet.decrypt(last_message.content.encode()).decode()
+            
+        friend_message.append({'friend': friend, 'message': last_message})
     
+    return render_template('messages.html', friend_message = friend_message, user_id = current_user.user_id, avatar_url = current_user.avatar_url)
+
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
 SEARCH_ENDPOINT = "https://uts-ws.nlm.nih.gov/rest/search/current"
