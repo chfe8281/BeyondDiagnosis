@@ -145,6 +145,43 @@ document.addEventListener("DOMContentLoaded", function() {
       groupResultsDiv.style.display = "block";
     });
   }
+  const groupID = document.getElementById('groupId')
+  if(groupID){
+    groupID.addEventListener('input', function () {
+      const query = this.value;
+      const resultsContainer = document.getElementById('group_results');
+
+      if (query.length < 2) {
+          resultsContainer.innerHTML = '';
+          return;
+      }
+
+      fetch(`/dashboard/search_joined_groups?groupId=${encodeURIComponent(query)}`)
+          .then(response => response.json())
+          .then(groups => {
+              resultsContainer.innerHTML = '';
+
+              groups.forEach(group => {
+                  const div = document.createElement('div');
+                  div.textContent = group.name;
+                  div.classList.add('dropdown-item');
+                  div.style.cursor = 'pointer';
+
+                  // Set selected group ID on click
+                  div.addEventListener('click', () => {
+                      document.getElementById('groupId').value = group.name;
+                      document.getElementById('selected_group_id').value = group.id;
+                      resultsContainer.innerHTML = '';  // Clear dropdown
+                  });
+
+                  resultsContainer.appendChild(div);
+              });
+          })
+          .catch(err => {
+              console.error('Error fetching groups:', err);
+          });
+    });
+  }
 });
 
 function selectGroup(name) {
@@ -156,3 +193,16 @@ function selectUser(name) {
   document.getElementById("user-search").value = name;
   document.getElementById("search_results").style.display = "none";
 }
+
+document.getElementById('fileInput').addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById('imagePreview');
+            img.src = e.target.result;
+            img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});

@@ -3,14 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>MedConnect</title>
-    <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
 </head>
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
         <p>Welcome {{user}}</p>
-    </div>
+        <div class = "row">
+            <div class = "column-small">
+                <button class = "button-link" id = "groupModalBtn">New Post</button>
 
+                <div id = "groupModal" class = "modal">
+                    <div class = "modal-content">
+                        <span class = "close" id = "closeGroupModalBtn" >&times;</span>
+                        <form method="GET" action="{{ url_for('search_joined_groups') }}" onsubmit="return false;">
+                            <input type="text" name="groupId" id="groupId" placeholder="Search groups..." autocomplete="off">
+                            <button type="submit" style = "display: none;"></button>
+                            <div id="group_results" class="dropdown"></div>
+                        </form>
+                        <form id = "postForm" method = "POST" enctype="multipart/form-data" action="{{ url_for('createPost') }}">
+                            <input type="hidden" name="group_id" id="selected_group_id">
+                            <input type="file" id="fileInput" name="image_file" accept="image/*" class="custom-file-input" required>
+                            <div id = "imagePost">
+                                <div id = "imagePrev">
+                                    <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width: 200px; margin-top: 10px;">
+                                </div>
+                                <div id = "imageAdd">
+                                    <label for="fileInput" class="custom-file-label">Add Image</label>
+                                </div>
+                            </div>
+                            <textarea type = "text" id = "caption" name = "caption" rows = "4" placeholder="Caption..."></textarea>
+                            <button type = "submit" class = "button-link">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class = "column-large">
+                {% for dp in dash_posts %}
+                    <div class = "postCard">
+                        {% if dp.owner %}
+                            <a href="/dashboard/post/delete/{{ dp.post.post_id }}" class="button-link">Delete</a>
+                        {% endif %}
+                        <img id = "postImg" src = "{{ dp.post.image_url }}">
+                        <div class = "postText">
+                            <p><a href="/profile/{{ dp.creator.user_id }}" class="links" onclick="event.stopPropagation()">{{ dp.creator.username }}</a> {{ dp.post.content }}</p>
+                            <div class = "postBottom">
+                                <a href="/groups/profile/{{ dp.group.group_id }}" class="links">{{ dp.group.name }}</a>
+                                <p id = "timestamp">{{ dp.timestamp }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
     {% include "components/footer.html" %}
+    <script src = "../static/src/app.js"></script>
+</body>
 </html>

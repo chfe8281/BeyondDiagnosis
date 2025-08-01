@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS comments (
   comment_id SERIAL PRIMARY KEY,
   creator_id INT NOT NULL,
   post_id INT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   content VARCHAR(140) NOT NULL,
   FOREIGN KEY (creator_id) REFERENCES users(user_id),
   FOREIGN KEY (post_id) REFERENCES posts(post_id)

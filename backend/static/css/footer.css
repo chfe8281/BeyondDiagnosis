@@ -20,6 +20,7 @@
 .contents{
   margin-left: 3%;
   margin-top: 2%;
+  margin-bottom: 5%;
 }
 
 #userDropdown{
@@ -168,6 +169,39 @@ input:checked + .slider:before {
   color: black;
 }
 
+#caption{
+  width: 100%;
+}
+
+.custom-file-input{
+  display: none;
+}
+
+.custom-file-label{
+  display: inline-block;
+  padding: 1% 10%;
+  background-color: #7662b0;
+  color: white;
+  border-radius: 2%;
+  cursor: pointer;
+  border-radius: 10px;
+  border: 2px solid black;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.custom-file-label:hover {
+  background-color: black;
+}
+
+#imagePost{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+
 label {
   display: block;
   margin-top: 10px;
@@ -188,6 +222,14 @@ button {
 }
 .column{
   flex: 50%;
+}
+
+.column-small{
+  flex: 15%;
+}
+
+.column-large{
+  flex: 85%;
 }
 
 .profile_table {
@@ -272,4 +314,43 @@ button {
 .container {
   text-align: center;
   padding: 8%;
+}
+
+#postImg{
+  width: 100%;
+  height: 75%;
+  object-fit: contain;
+  display: block;
+  border: 1px solid #ddd;
+}
+
+.postCard{
+  box-shadow: 0 4px 8px 8px rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 50%;
+  height: 100%;
+  padding: inherit;
+  margin-top: 2.5%;
+  margin-left: 15%;
+  display: flex;
+  flex-direction: column;
+}
+
+.postText{
+  max-height: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.links{
+  color:#010c18;
+  font-weight: bold;
+}
+
+.postBottom{
+  display: flex;
+}
+
+#timestamp{
+  margin-left: auto;
 }

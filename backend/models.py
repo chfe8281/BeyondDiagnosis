@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from sqlalchemy.dialects.postgresql import ARRAY
 from datetime import datetime, timezone
 from sqlalchemy import PrimaryKeyConstraint
+from sqlalchemy.sql import func
 
 from __init__ import db
 
@@ -77,3 +78,11 @@ class GroupMembers(db.Model):
         PrimaryKeyConstraint('group_id', 'user_id'),
     )
     
+class Posts(db.Model):
+    __tablename__ = 'posts'
+    post_id = db.Column(db.Integer, primary_key = True)
+    creator_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    content = db.Column(db.String(200), nullable = False)
+    time_posted = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    image_url = db.Column(db.Text)
+    group_id = db.Column(db.Integer, db.ForeignKey('groups.group_id'))
