@@ -86,3 +86,12 @@ class Posts(db.Model):
     time_posted = db.Column(db.DateTime(timezone=True), server_default=func.now())
     image_url = db.Column(db.Text)
     group_id = db.Column(db.Integer, db.ForeignKey('groups.group_id'))
+    
+class Messages(db.Model):
+    __tablename__ = 'messages'
+    message_id = db.Column(db.Integer, primary_key = True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    receiver_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    content = db.Column(db.String(200), nullable = False)
+    time_sent = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    is_read = db.Column(db.Boolean, default = False)

@@ -14,9 +14,9 @@
             <tr>
                 <td>{{ fm.friend.username }}</td>
                 {% if fm.message %}
-                    <td>{{ fm.message.content }}</td>
+                    <td><a href = "{{ url_for('viewMessages', receiver=fm.friend.user_id) }}" >{{ fm.message.content }}</a></td>
                     {% else %}
-                        <td>Start the conversation ...</td>
+                        <td><a href = "{{ url_for('viewMessages', receiver=fm.friend.user_id) }}">Start the conversation ...</a></td>
                 {% endif %}
             </tr>
                 {% endfor %}
