@@ -3,7 +3,7 @@ import requests
 import os
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-from sqlalchemy import text, desc
+from sqlalchemy import text, desc, exists
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
@@ -641,6 +641,26 @@ def sendMessage(receiver):
         
         return redirect(url_for('viewMessages', receiver = receiver))
     return redirect(url_for('viewMessages', receiver = receiver))
+# NOTIFICATIONS:
+@app.context_processor
+def inject_friend_request_flag():
+    if current_user.is_authenticated:
+        friend_request = Friend_Requests.query.filter((Friend_Requests.receiver_id == current_user.user_id) & (Friend_Requests.status =='pending')).first() is not None
+        return dict(has_friend_requests=friend_request)
+    return dict(has_friend_reqeusts=False)
+
+@app.context_processor
+def inject_group_request_flag():
+    if current_user.is_authenticated:
+        group_request = db.session.query(
+            exists().where(
+                (GroupRequests.status == 'pending') &
+                (GroupRequests.group_id == Groups.group_id) &
+                (Groups.creator_id == current_user.user_id)
+            )
+).scalar()
+        return dict(has_group_requests=group_request)
+    return dict(has_group_requests=False)
 
 @app.context_processor
 def inject_unread_message_flag():
