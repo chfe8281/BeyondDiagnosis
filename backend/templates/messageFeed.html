@@ -9,18 +9,23 @@
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
-        <div class = "chat-box">
-            {% for message in messages %}
-                <div class = "message {% if message.sender_id == user_id %}sent{% else %}received{% endif %}">
-                    <p>{{ message.content }}</p>
-                    <span class="timestamp">{{ message.time_sent.strftime('%b %d, %I:%M %p') }}</span>
+        <a class = "button-link" href = "{{ url_for('viewMessageBoard') }}">Back</a>
+        <div class = "row">
+            <div class = "column">
+                <div class = "chat-box">
+                    {% for msg in messages %}
+                        <div class = "message {% if msg.message.sender_id == user_id %}sent{% else %}received{% endif %}">
+                            <div class = "postBottom"><p id = "username">{{ msg.sender.username }} </p><p>{{ msg.content }}</p></div>
+                            <span class="timestamp">{{ msg.message.time_sent.strftime('%b %d, %I:%M %p') }}</span>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
+                <form method = "POST" action="{{ url_for('sendMessage', receiver = receive ) }}" id = "messageSender">
+                    <input type = "text" id = "senderBox" name = "content" required>
+                    <button type = "submit" class = "button-link" id = "sendButton">Send</button>
+                </form>
+            </div>
         </div>
-        <form method = "POST" action="{{ url_for('sendMessage', receiver = receive ) }}">
-            <input type = "text" id = "content" name = "content" required>
-            <button type = "submit" class = "button-link">Send</button>
-        </form>
     </div>
     {% include "components/footer.html" %}
 </body>

@@ -349,10 +349,12 @@ button {
 
 .postBottom{
   display: flex;
+  align-items: center;
 }
 
 #timestamp{
   margin-left: auto;
+  vertical-align: center;
 }
 
 .chatbox{
@@ -372,15 +374,18 @@ button {
   border-radius: 10px;
   word-wrap: break-word;
   position: relative;
+  margin-bottom: 2%;
 }
 
 .sent {
   align-self: flex-end;
+  margin-left: auto;
   background-color: #daf1da;
 }
 
 .received {
   align-self: flex-start;
+  margin-right: auto;
   background-color: #e5e5f7;
 }
 
@@ -390,4 +395,75 @@ button {
   position: absolute;
   bottom: -1.2rem;
   right: 0;
+}
+
+#username{
+  font-weight: bold;
+  margin-right: 1%;
+}
+
+#messageSender{
+  text-align: center;
+  position: fixed;
+  bottom: 10%;
+  right: 1%;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  z-index: 1000;
+}
+
+#senderBox{
+  width: 80%;
+}
+
+#sendButton{
+  margin-left: 1%;
+}
+
+#message_table{
+  margin-left: 10%;
+  width: 60%;
+  table-layout: auto; /* Prevent cells from growing too wide */
+  border-collapse: collapse;
+}
+
+#message_user{
+  width: 10%;
+}
+
+#message_table td, th {
+  padding: 1%;
+  border: 1px solid #111010;
+  word-wrap: break-word;     /* Allow long words to break */
+  overflow-wrap: break-word; /* Modern alternative */
+  overflow: hidden;          /* Hide overflow if needed */
+  vertical-align: middle;    /* Vertically center content */
+  text-align: center;
+}
+
+.lastMessage{
+  text-decoration: none;
+  color: black;
+  font-style: italic;
+}
+
+.unreadBox{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.unread{
+  font-weight: bold;
+}
+
+#unreadDot {
+  height: 10px;
+  width: 10px;
+  background-color: rgb(99, 180, 234);
+  border-radius: 50%;
+  display: inline-block;
+  margin-bottom: 20%;
 }

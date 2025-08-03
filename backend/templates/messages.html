@@ -9,14 +9,24 @@
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
-        <table id = "friends_table">
+        <h3>Messages:</h3>
+        <table id = "message_table">
             {% for fm in friend_message %}
             <tr>
-                <td>{{ fm.friend.username }}</td>
-                {% if fm.message %}
-                    <td><a href = "{{ url_for('viewMessages', receiver=fm.friend.user_id) }}" >{{ fm.message.content }}</a></td>
+                {% if fm.message.is_read == false and fm.message.receiver_id == user_id %}
+                    <td id = "message_user">
+                        <div class = "unreadBox">
+                            <span id = "unreadDot" style="margin-right: 10%;"></span>
+                            <p class = "unread">{{ fm.friend.username }}</p>
+                        </div>
+                    </td>
                     {% else %}
-                        <td><a href = "{{ url_for('viewMessages', receiver=fm.friend.user_id) }}">Start the conversation ...</a></td>
+                        <td id = "message_user">{{ fm.friend.username }}</td>
+                {% endif %}
+                {% if fm.message %}
+                    <td><div class = "postBottom"><a class = "lastMessage" href = "{{ url_for('viewMessages', receiver=fm.friend.user_id) }}" >{{ fm.message.content }}</a><p id = "timestamp">{{ fm.message.time_sent.strftime('%b %d, %I:%M %p') }}</p></div></td>
+                    {% else %}
+                        <td><a class = "lastMessage" href = "{{ url_for('viewMessages', receiver=fm.friend.user_id) }}">Start the conversation ...</a></td>
                 {% endif %}
             </tr>
                 {% endfor %}

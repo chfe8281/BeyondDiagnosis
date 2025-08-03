@@ -48,7 +48,7 @@ with app.app_context():
         print("✅ Connected to database.")
     except Exception as e:
         print("❌ Failed to connect:", e)
-
+        
 # SPLASH PAGE:
 @app.route('/', methods=['GET', 'POST'])
 def splash():
@@ -617,13 +617,16 @@ def viewMessageBoard():
 @app.route('/messages/<int:receiver>', methods = ['GET', 'POST'])
 @login_required
 def viewMessages(receiver):
-    messages = Messages.query.filter(((Messages.sender_id == current_user.user_id) & (Messages.receiver_id == receiver))|((Messages.receiver_id == current_user.user_id) & (Messages.sender_id == receiver))).order_by(Messages.time_sent.desc()).all()
+    messages = Messages.query.filter(((Messages.sender_id == current_user.user_id) & (Messages.receiver_id == receiver))|((Messages.receiver_id == current_user.user_id) & (Messages.sender_id == receiver))).order_by(Messages.time_sent).all()
+    message_sender = []
     for message in messages:
-        message.content = f.decrypt(message.content.encode()).decode()
         if message.sender_id == receiver:
             message.is_read = True
-    
-    return render_template('messageFeed.html', receive = receiver, messages = messages, user_id = current_user.user_id, avatar_url = current_user.avatar_url)
+        decrypted_content = f.decrypt(message.content.encode()).decode()
+        sender = User.query.filter(User.user_id == message.sender_id).first()
+        message_sender.append({'message': message, 'content': decrypted_content, 'sender': sender})
+    db.session.commit()
+    return render_template('messageFeed.html', receive = receiver, messages = message_sender, user_id = current_user.user_id, avatar_url = current_user.avatar_url)
     
 @app.route('/messages/send/<int:receiver>', methods = ['GET', 'POST'])
 @login_required
@@ -638,7 +641,13 @@ def sendMessage(receiver):
         
         return redirect(url_for('viewMessages', receiver = receiver))
     return redirect(url_for('viewMessages', receiver = receiver))
-        
+
+@app.context_processor
+def inject_unread_message_flag():
+    if current_user.is_authenticated:
+        unread_exists = Messages.query.filter_by(receiver_id=current_user.user_id, is_read=False).first() is not None
+        return dict(has_unread_messages=unread_exists)
+    return dict(has_unread_messages=False)
 
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
