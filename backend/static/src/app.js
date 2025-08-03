@@ -182,6 +182,44 @@ document.addEventListener("DOMContentLoaded", function() {
           });
     });
   }
+
+  fileInput = document.getElementById('fileInput')
+  if(fileInput){
+    fileInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById('imagePreview');
+            img.src = e.target.result;
+            img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+  
+    });
+  }
+
+  const rows = document.querySelectorAll('.friendRow');
+  const chatPanel = document.getElementById('chatPanel');
+  if(rows && chatPanel){
+    rows.forEach(row => {
+      row.addEventListener('click', function () {
+        const friendId = this.dataset.friendId;
+        console.log(friendId)
+        fetch(`/messages/ajax/${friendId}`)
+          .then(response => response.text())
+          .then(html => {
+            chatPanel.innerHTML = html;
+          })
+          .catch(err => {
+            console.error("Error loading messages:", err);
+            chatPanel.innerHTML = "<p>Error loading messages.</p>";
+          });
+      });
+    });
+  }
+
 });
 
 function selectGroup(name) {
@@ -193,16 +231,3 @@ function selectUser(name) {
   document.getElementById("user-search").value = name;
   document.getElementById("search_results").style.display = "none";
 }
-
-document.getElementById('fileInput').addEventListener('change', function() {
-    const file = this.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = document.getElementById('imagePreview');
-            img.src = e.target.result;
-            img.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
-});

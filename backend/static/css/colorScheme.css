@@ -1,0 +1,26 @@
+body{
+  background: #fefff3;
+  color: #412722;
+}
+
+#foot, #nav, #nav_main{
+    background: #d59aa5;
+}
+
+.custom-nav{
+    background: #d59aa5;
+}
+
+table{
+    background: #f7d8de;
+}
+/* #f1eeda*/
+
+.button-link{
+    background-color: #bbab9e;
+    color: #2a1a16;
+}
+
+a{
+    color:#d14226;
+}

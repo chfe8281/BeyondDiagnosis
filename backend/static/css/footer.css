@@ -1,10 +1,10 @@
 #foot{
   position: fixed;
   bottom: 0;
-  object-fit:fill;
+  object-fit:contain;
   background-color: rgb(186, 216, 223);
   width: 100%;
-  height: 2.5rem;
+  height: 3rem;
   text-align: center;
   margin-left: 0%;
 }
@@ -318,7 +318,9 @@ button {
 
 #postImg{
   width: 100%;
-  height: 75%;
+  max-width: 500px;            /* Limit width */
+  height: auto;                /* Maintain aspect ratio */
+  max-height: 300px;
   object-fit: contain;
   display: block;
   border: 1px solid #ddd;
@@ -328,18 +330,23 @@ button {
   box-shadow: 0 4px 8px 8px rgba(0,0,0,0.2);
   transition: 0.3s;
   width: 50%;
-  height: 100%;
   padding: inherit;
   margin-top: 2.5%;
   margin-left: 15%;
   display: flex;
   flex-direction: column;
+  background-color: rgb(247, 225, 229);
+  align-items: center;
 }
 
 .postText{
-  max-height: 10px;
   display: flex;
   flex-direction: column;
+  flex-shrink: 1;
+  flex-grow: 0;
+  align-items: flex-start;
+  width: 100%;
+  margin-right: auto;
 }
 
 .links{
@@ -349,26 +356,30 @@ button {
 
 .postBottom{
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  align-items: stretch;
 }
 
 #timestamp{
-  margin-left: auto;
-  vertical-align: center;
+  display: flex;
+  align-items: center;
+  margin-top: 5%;
 }
 
-.chatbox{
+#deleteButton{
+  margin: 1%;
+  margin-left: auto;
+}
+.chat-box{
   display: flex;
   flex-direction: column;
   max-height: 600px;
-  overflow-y: auto;
-  padding: 1rem;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9
+  padding-bottom: 10%;
 }
 
 .message {
-  max-width: 70%;
+  width: 55%;
   margin: 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 10px;
@@ -380,13 +391,13 @@ button {
 .sent {
   align-self: flex-end;
   margin-left: auto;
-  background-color: #daf1da;
+  background-color: #f9eff8;
 }
 
 .received {
   align-self: flex-start;
   margin-right: auto;
-  background-color: #e5e5f7;
+  background-color: #d8d4b8;
 }
 
 .timestamp {
@@ -402,13 +413,18 @@ button {
   margin-right: 1%;
 }
 
+#messageHeader{
+  margin-bottom: 2%;
+}
+
 #messageSender{
   text-align: center;
+  margin-top: 10%;
   position: fixed;
   bottom: 10%;
   right: 1%;
   display: flex;
-  width: 100%;
+  width: 65%;
   justify-content: center;
   z-index: 1000;
 }
@@ -422,6 +438,7 @@ button {
 }
 
 #message_table{
+  padding: 5%;
   margin-left: 10%;
   width: 60%;
   table-layout: auto; /* Prevent cells from growing too wide */
@@ -429,14 +446,12 @@ button {
 }
 
 #message_user{
-  width: 10%;
+  object-fit: contain;
 }
 
 #message_table td, th {
-  padding: 1%;
+  padding: 3%;
   border: 1px solid #111010;
-  word-wrap: break-word;     /* Allow long words to break */
-  overflow-wrap: break-word; /* Modern alternative */
   overflow: hidden;          /* Hide overflow if needed */
   vertical-align: middle;    /* Vertically center content */
   text-align: center;

@@ -92,6 +92,6 @@ class Messages(db.Model):
     message_id = db.Column(db.Integer, primary_key = True)
     sender_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     receiver_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    content = db.Column(db.String(200), nullable = False)
+    content = db.Column(db.Text, nullable = False)
     time_sent = db.Column(db.DateTime(timezone=True), server_default=func.now())
     is_read = db.Column(db.Boolean, default = False)

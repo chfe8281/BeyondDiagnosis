@@ -15,7 +15,7 @@ import traceback
 from sqlalchemy import or_
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 
 # Load .env file contents into environment variables
 load_dotenv()
@@ -24,7 +24,11 @@ from __init__ import app
 from __init__ import db
 key = os.getenv("FERNET_KEY").encode() 
 f = Fernet(key)
+token = f.encrypt(b"hello world")
+print(token)
 
+# Manually decrypt
+print(f.decrypt(token).decode())
 cloudinary.config( 
     cloud_name = os.getenv("CLOUD_NAME"), 
     api_key = os.getenv("CLOUD_API_KEY"), 
@@ -49,6 +53,11 @@ with app.app_context():
     except Exception as e:
         print("❌ Failed to connect:", e)
         
+with app.app_context():
+    all_messages = Messages.query.all()
+    for message in all_messages:
+        db.session.delete(message)
+    db.session.commit()
 # SPLASH PAGE:
 @app.route('/', methods=['GET', 'POST'])
 def splash():
@@ -600,6 +609,8 @@ def group_profile(id):
 @app.route('/messages', methods = ['GET', 'POST'])
 @login_required
 def viewMessageBoard():
+    receiver = request.args.get('receiver', type=int)
+    
     friends1 = Friends.query.filter(Friends.user1_id == current_user.user_id).all()
     friends2 = Friends.query.filter(Friends.user2_id == current_user.user_id).all()
     friend_ids = [f.user2_id for f in friends1] + [f.user1_id for f in friends2]
@@ -607,27 +618,60 @@ def viewMessageBoard():
     for id in friend_ids:
         friend = User.query.filter(User.user_id == id).first()
         last_message = Messages.query.filter(((Messages.sender_id == current_user.user_id) & (Messages.receiver_id == id))|((Messages.receiver_id == current_user.user_id) & (Messages.sender_id == id))).order_by(Messages.time_sent.desc()).first()
+        decrypted_content = "Start conversation here ..."
         if last_message:
-            last_message.content = f.decrypt(last_message.content.encode()).decode()
+            decrypted_content = f.decrypt(last_message.content.encode()).decode()
             
-        friend_message.append({'friend': friend, 'message': last_message})
+        friend_message.append({'friend': friend, 'message': last_message, 'decrypted': decrypted_content})
     
-    return render_template('messages.html', friend_message = friend_message, user_id = current_user.user_id, avatar_url = current_user.avatar_url)
+    message_sender = []
+    if receiver:
+        message_sender = get_decrypted_messages_for_chat(current_user.user_id, receiver)
 
-@app.route('/messages/<int:receiver>', methods = ['GET', 'POST'])
+
+    return render_template(
+        'messages.html',
+        friend_message=friend_message,
+        user_id=current_user.user_id,
+        avatar_url=current_user.avatar_url,
+        messages=message_sender,
+        receiver=receiver
+    )
+
+@app.route('/messages/ajax/<int:receiver>', methods=['GET', 'POST'])
 @login_required
-def viewMessages(receiver):
-    messages = Messages.query.filter(((Messages.sender_id == current_user.user_id) & (Messages.receiver_id == receiver))|((Messages.receiver_id == current_user.user_id) & (Messages.sender_id == receiver))).order_by(Messages.time_sent).all()
+def ajaxMessages(receiver):
+    message_sender = get_decrypted_messages_for_chat(current_user.user_id, receiver)
+    return render_template('components/message_feed.html', messages=message_sender, user_id=current_user.user_id, receiver=receiver)
+
+def get_decrypted_messages_for_chat(user_id, receiver):
+    messages = Messages.query.filter(
+        ((Messages.sender_id == user_id) & (Messages.receiver_id == receiver)) |
+        ((Messages.receiver_id == user_id) & (Messages.sender_id == receiver))
+    ).order_by(Messages.time_sent).all()
+
     message_sender = []
     for message in messages:
         if message.sender_id == receiver:
             message.is_read = True
-        decrypted_content = f.decrypt(message.content.encode()).decode()
-        sender = User.query.filter(User.user_id == message.sender_id).first()
+            
+        try:
+            print(f"Attempting to decrypt message content: {message.content}")  # Debug line
+            ciphertext = message.content
+            if isinstance(ciphertext, bytes):
+                ciphertext_bytes = ciphertext
+            else:
+                ciphertext_bytes = ciphertext.encode('utf-8')
+            decrypted_content = f.decrypt(ciphertext_bytes).decode('utf-8')
+        except Exception as e:
+            print(f"Failed to decrypt message {message.message_id} content: {e}")
+            decrypted_content = "[Invalid or corrupted message]"
+
+        sender = User.query.get(message.sender_id)
         message_sender.append({'message': message, 'content': decrypted_content, 'sender': sender})
     db.session.commit()
-    return render_template('messageFeed.html', receive = receiver, messages = message_sender, user_id = current_user.user_id, avatar_url = current_user.avatar_url)
-    
+    return message_sender
+
 @app.route('/messages/send/<int:receiver>', methods = ['GET', 'POST'])
 @login_required
 def sendMessage(receiver):
@@ -639,8 +683,8 @@ def sendMessage(receiver):
         db.session.add(new_message)
         db.session.commit()
         
-        return redirect(url_for('viewMessages', receiver = receiver))
-    return redirect(url_for('viewMessages', receiver = receiver))
+        return redirect(url_for('viewMessageBoard', receiver=receiver))
+    return redirect(url_for('viewMessageBoard', receiver=receiver))
 # NOTIFICATIONS:
 @app.context_processor
 def inject_friend_request_flag():

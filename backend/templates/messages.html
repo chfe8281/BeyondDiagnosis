@@ -5,33 +5,53 @@
     <title>UMLS Search</title>
     <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href = "{{ url_for('static', filename='css/colorScheme.css') }}" rel = "stylesheet">
 </head>
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
-        <h3>Messages:</h3>
-        <table id = "message_table">
-            {% for fm in friend_message %}
-            <tr>
-                {% if fm.message.is_read == false and fm.message.receiver_id == user_id %}
-                    <td id = "message_user">
-                        <div class = "unreadBox">
-                            <span id = "unreadDot" style="margin-right: 10%;"></span>
-                            <p class = "unread">{{ fm.friend.username }}</p>
-                        </div>
-                    </td>
-                    {% else %}
-                        <td id = "message_user">{{ fm.friend.username }}</td>
-                {% endif %}
-                {% if fm.message %}
-                    <td><div class = "postBottom"><a class = "lastMessage" href = "{{ url_for('viewMessages', receiver=fm.friend.user_id) }}" >{{ fm.message.content }}</a><p id = "timestamp">{{ fm.message.time_sent.strftime('%b %d, %I:%M %p') }}</p></div></td>
-                    {% else %}
-                        <td><a class = "lastMessage" href = "{{ url_for('viewMessages', receiver=fm.friend.user_id) }}">Start the conversation ...</a></td>
-                {% endif %}
-            </tr>
-                {% endfor %}
-        </table>
+        <h3 id = "messageHeader">Messages:</h3>
+        <div class = "container-fluid">
+            <div class = "row">
+                <div class = "col-md-4 border-end" id = "messageList">
+                    <table id = "message_table">
+                        {% for fm in friend_message %}
+                        <tr class="friendRow" data-friend-id="{{ fm.friend.user_id }}">
+                            {% if fm.message.is_read == false and fm.message.receiver_id == user_id %}
+                                <td id = "message_user">
+                                    <div class = "unreadBox">
+                                        <span id = "unreadDot" style="margin-right: 10%;"></span>
+                                        <p class = "unread">{{ fm.friend.username }}</p>
+                                    </div>
+                                </td>
+                                {% else %}
+                                    <td id = "message_user">{{ fm.friend.username }}</td>
+                            {% endif %}
+                            <td>
+                                <div class="postBottom">
+                                    {{ fm.decrypted if fm.message else "Start the conversation ..." }}
+                                    {% if fm.message %}
+                                        <p class="timestamp">{{ fm.message.time_sent.strftime('%b %d, %I:%M %p') }}</p>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                            {% endfor %}
+                    </table>
+                </div>
+                <div class="col-md-8" id="chatPanel">
+                    <div id="chatBox">
+                        {% if messages %}
+                            {% include 'components/message_feed.html' %}
+                            {% else %}
+                                <p>Select a conversation to view messages</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     {% include "components/footer.html" %}
+    <script src = "../static/src/app.js"></script>
 </body>
 </html>
