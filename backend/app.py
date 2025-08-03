@@ -15,13 +15,15 @@ import traceback
 from sqlalchemy import or_
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
-
+from cryptography.fernet import Fernet
 
 # Load .env file contents into environment variables
 load_dotenv()
 
 from __init__ import app
 from __init__ import db
+key = os.getenv("FERNET_KEY").encode() 
+f = Fernet(key)
 
 cloudinary.config( 
     cloud_name = os.getenv("CLOUD_NAME"), 
@@ -33,7 +35,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts
+from models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -46,7 +48,7 @@ with app.app_context():
         print("✅ Connected to database.")
     except Exception as e:
         print("❌ Failed to connect:", e)
-
+        
 # SPLASH PAGE:
 @app.route('/', methods=['GET', 'POST'])
 def splash():
@@ -594,7 +596,59 @@ def search_groups():
 def group_profile(id):
     group_returned = Groups.query.filter(Groups.group_id == id).first()
     return render_template('groupProfile.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url, name = group_returned.name, creator = group_returned.creator, description = group_returned.description, group_avatar = group_returned.avatar_link)
+
+@app.route('/messages', methods = ['GET', 'POST'])
+@login_required
+def viewMessageBoard():
+    friends1 = Friends.query.filter(Friends.user1_id == current_user.user_id).all()
+    friends2 = Friends.query.filter(Friends.user2_id == current_user.user_id).all()
+    friend_ids = [f.user2_id for f in friends1] + [f.user1_id for f in friends2]
+    friend_message = []
+    for id in friend_ids:
+        friend = User.query.filter(User.user_id == id).first()
+        last_message = Messages.query.filter(((Messages.sender_id == current_user.user_id) & (Messages.receiver_id == id))|((Messages.receiver_id == current_user.user_id) & (Messages.sender_id == id))).order_by(Messages.time_sent.desc()).first()
+        if last_message:
+            last_message.content = f.decrypt(last_message.content.encode()).decode()
+            
+        friend_message.append({'friend': friend, 'message': last_message})
     
+    return render_template('messages.html', friend_message = friend_message, user_id = current_user.user_id, avatar_url = current_user.avatar_url)
+
+@app.route('/messages/<int:receiver>', methods = ['GET', 'POST'])
+@login_required
+def viewMessages(receiver):
+    messages = Messages.query.filter(((Messages.sender_id == current_user.user_id) & (Messages.receiver_id == receiver))|((Messages.receiver_id == current_user.user_id) & (Messages.sender_id == receiver))).order_by(Messages.time_sent).all()
+    message_sender = []
+    for message in messages:
+        if message.sender_id == receiver:
+            message.is_read = True
+        decrypted_content = f.decrypt(message.content.encode()).decode()
+        sender = User.query.filter(User.user_id == message.sender_id).first()
+        message_sender.append({'message': message, 'content': decrypted_content, 'sender': sender})
+    db.session.commit()
+    return render_template('messageFeed.html', receive = receiver, messages = message_sender, user_id = current_user.user_id, avatar_url = current_user.avatar_url)
+    
+@app.route('/messages/send/<int:receiver>', methods = ['GET', 'POST'])
+@login_required
+def sendMessage(receiver):
+    if request.method == 'POST':
+        content = request.form['content']
+        encrypted_content = f.encrypt(content.encode()).decode() 
+        new_message = Messages(sender_id = current_user.user_id, receiver_id = receiver, content = encrypted_content)
+        
+        db.session.add(new_message)
+        db.session.commit()
+        
+        return redirect(url_for('viewMessages', receiver = receiver))
+    return redirect(url_for('viewMessages', receiver = receiver))
+
+@app.context_processor
+def inject_unread_message_flag():
+    if current_user.is_authenticated:
+        unread_exists = Messages.query.filter_by(receiver_id=current_user.user_id, is_read=False).first() is not None
+        return dict(has_unread_messages=unread_exists)
+    return dict(has_unread_messages=False)
+
 API_KEY = os.getenv('API_KEY')
 AUTH_ENDPOINT = "https://utslogin.nlm.nih.gov/cas/v1/api-key"
 SEARCH_ENDPOINT = "https://uts-ws.nlm.nih.gov/rest/search/current"
