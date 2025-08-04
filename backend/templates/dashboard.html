@@ -5,6 +5,7 @@
     <title>MedConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
+    <link href = "{{ url_for('static', filename='css/colorScheme.css') }}" rel = "stylesheet">
 </head>
 <body>
     {% include "components/navbar.html" %}
@@ -43,7 +44,7 @@
                 {% for dp in dash_posts %}
                     <div class = "postCard">
                         {% if dp.owner %}
-                            <a href="/dashboard/post/delete/{{ dp.post.post_id }}" class="button-link">Delete</a>
+                            <a href="/dashboard/post/delete/{{ dp.post.post_id }}" class="button-link" id = "deleteButton">Delete</a>
                         {% endif %}
                         <img id = "postImg" src = "{{ dp.post.image_url }}">
                         <div class = "postText">
