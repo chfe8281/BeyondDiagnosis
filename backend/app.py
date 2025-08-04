@@ -53,11 +53,7 @@ with app.app_context():
     except Exception as e:
         print("❌ Failed to connect:", e)
         
-with app.app_context():
-    all_messages = Messages.query.all()
-    for message in all_messages:
-        db.session.delete(message)
-    db.session.commit()
+
 # SPLASH PAGE:
 @app.route('/', methods=['GET', 'POST'])
 def splash():
