@@ -28,8 +28,8 @@
                                     <td id = "message_user">{{ fm.friend.username }}</td>
                             {% endif %}
                             <td>
-                                <div class="postBottom">
-                                    {{ fm.decrypted if fm.message else "Start the conversation ..." }}
+                                <div class="lastMessageCol">
+                                    <p id = "lastMessage">{{ fm.decrypted if fm.message else "Start the conversation ..." }}</p>
                                     {% if fm.message %}
                                         <p class="timestamp">{{ fm.message.time_sent.strftime('%b %d, %I:%M %p') }}</p>
                                     {% endif %}

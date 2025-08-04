@@ -1,16 +1,18 @@
-<div class="chat-box" id="chat-feed">
-  {% for msg in messages %}
-  <div class="message {% if msg.message.sender_id == user_id %}sent{% else %}received{% endif %}">
-    <div class="postBottom">
-      <p id="username">{{ msg.sender.username }}</p>
-      <p>{{ msg.content }}</p>
-    </div>
-    <span class="timestamp">{{ msg.message.time_sent.strftime('%b %d, %I:%M %p') }}</span>
-  </div>
-  {% endfor %}
+<div class = "chat-container">
+  <div class="chat-box" id="chat-feed">
+    {% for msg in messages %}
+      <div class="message {% if msg.message.sender_id == user_id %}sent{% else %}received{% endif %}">
+        <div class="postBottom" style = "justify-content: left;">
+          <p id="username">{{ msg.sender.username }}</p>
+          <p>{{ msg.content }}</p>
+        </div>
+      </div>
+      <span class="timestamp">{{ msg.message.time_sent.strftime('%b %d, %I:%M %p') }}</span>
+    {% endfor %}
 
-  <form method="POST" action="{{ url_for('sendMessage', receiver=receiver) }}" id="messageSender">
-    <input type="text" id="senderBox" name="content" required>
-    <button type="submit" class="button-link" id="sendButton">Send</button>
-  </form>
+  </div>
+    <form method="POST" action="{{ url_for('sendMessage', receiver=receiver) }}" id="messageSender">
+      <input type="text" id="senderBox" name="content" required>
+      <button type="submit" class="button-link" id="sendButton">Send</button>
+    </form>
 </div>
