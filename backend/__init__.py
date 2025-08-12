@@ -10,6 +10,7 @@ load_dotenv()
 fernet_key = os.getenv('FERNET_KEY')
 f = Fernet(fernet_key)
 app = Flask(__name__)
+app.debug = os.getenv("FLASK_DEBUG", "False") == "True"
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')

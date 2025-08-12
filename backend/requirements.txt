@@ -9,3 +9,4 @@ cloudinary
 cryptography
 flask-cors
 psycopg2-binary
+gunicorn
