@@ -138,6 +138,10 @@ input:checked + .slider:before {
   margin-bottom: 3%;
 }
 
+#groupModalCont{
+  width: 400px;
+}
+
 .modal {
   display: none;
   position: fixed;
@@ -148,7 +152,6 @@ input:checked + .slider:before {
   background-color: rgba(0,0,0,0.5);
 }
 
-    /* Modal content */
 .modal-content {
   background-color: #fff;
   margin: 10% auto;
@@ -181,8 +184,8 @@ input:checked + .slider:before {
 .custom-file-label{
   display: inline-block;
   padding: 1% 10%;
-  background-color: #7662b0;
-  color: white;
+  background-color: #bbab9e;
+  color: #2a1a16;
   border-radius: 2%;
   cursor: pointer;
   border-radius: 10px;
@@ -351,7 +354,7 @@ button {
 }
 
 .links{
-  color:#010c18;
+  color:#412722;;
   font-weight: bold;
 }
 

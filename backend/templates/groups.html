@@ -15,15 +15,6 @@
                 <button class = "button-link" id = "groupModalBtn">Create Group</button>
                 <h3>Groups</h3>
                 <table id = "groups_table">
-                    {% if groups %}
-                        <tr>
-                            <td colspan = "2">
-                                <div class = "user_info">
-                                    <b>Groups</b>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endif %}
                     {% for group in groups %}
                         <tr>
                             <td>
@@ -37,15 +28,6 @@
                 </table>
                 <h3>Groups Requested</h3>
                 <table id = "groups_table">
-                    {% if requests_sent %}
-                        <tr>
-                            <td colspan = "2">
-                                <div class = "user_info">
-                                    <b>Groups Requested</b>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endif %}
                     {% for sent in requests_sent %}
                         <tr>
                             <td>
@@ -107,7 +89,7 @@
         </div>
 
         <div id = "groupModal" class = "modal">
-            <div class = "modal-content">
+            <div class = "modal-content" id = "groupModalCont">
                 <span class = "close" id = "closeGroupModalBtn" >&times;</span>
                 <h2>Create Group</h2>
                 <form id = "groupForm" method = "POST" enctype="multipart/form-data" action="{{ url_for('createGroup') }}">
