@@ -22,6 +22,7 @@ load_dotenv()
 
 from backend import app
 from backend import db
+
 key = os.getenv("FERNET_KEY").encode() 
 f = Fernet(key)
 token = f.encrypt(b"hello world")
@@ -40,6 +41,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 from backend.models  import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages
+
 
 @login_manager.user_loader
 def load_user(user_id):
