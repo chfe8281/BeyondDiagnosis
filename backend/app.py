@@ -39,7 +39,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from backend import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages
+from backend.models  import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages
 
 @login_manager.user_loader
 def load_user(user_id):
