@@ -5,55 +5,72 @@
     <title>MedConnect</title>
     <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href = "{{ url_for('static', filename='css/colorScheme.css') }}" rel = "stylesheet">
 </head>
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
-        <p>Edit Profile</p>
+        <h3>Edit Profile</h3>
         <form method="POST" enctype = "multipart/form-data" id = "uploadForm">
-            <input type="text-box" name="bio" placeholder="Bio" value = "{{ bio if bio else '' }}" required>
-            <input type="text" name="location" placeholder="Location" value = "{{ location if location else '' }}" required>
-            <input type="text" name="user_type" placeholder="Patient" value = "{{ status if status else '' }}" required>
-            <div id = "interestInputs">
-                {% if interests %}
-                    {% for interest in interests %}
-                        <div id = "interest-group">
-                            <input type="text" name="interests[]" value="{{ interest }}">
-                            <button type="button" onclick="removeField(this)">Remove</button>
+            <table class="profile_table">
+                <tr>
+                    <td class = "avatar_cell" style = "width: 300px;">
+                        <input type="file" id="fileInput" name="avatar_file" accept="image/*" class="custom-file-input">
+                        <div id = "imagePost">
+                            <div id = "imagePrev">
+                                <img id="imagePreview" src="{{ avatar_url if avatar_url else url_for('static', filename='img/default_avatar.png') }}" alt="Image Preview" style="display:none; max-width: 200px; margin-top: 10px; display:block;">
+                            </div>
+                            <div id = "imageAdd">
+                                <label for="fileInput" class="custom-file-label" style = "padding: 4px;">Add Image</label>
+                            </div>
                         </div>
-                    {% endfor %}
-                    {% else %}
-                        <input type="text" name="interests[]">
-                {% endif %}
-            </div>
-            <button type="button" onclick="addTextInput(true)">Add More</button>
-            <div id = "conditionInputs">
-                {% if conditions %}
-                    {% for condition in conditions %}
-                        <div id = "condition-group">
-                            <input type="text" name="conditions[]" value="{{ condition }}">
-                            <button type="button" onclick="removeField(this)">Remove</button>
+                    </td>
+                    <td>
+                        <label class = "links">Bio: </label>
+                        <input type="text-box" name="bio" value = "{{ bio if bio else '' }}" required><br>
+                        <label class = "links">Location: </label>
+                        <input type="text" name="location" value = "{{ location if location else '' }}" required><br>
+                        <label class = "links">User Status: </label>
+                        <input type="text" name="user_type" placeholder="Patient" value = "{{ status if status else '' }}" required><br>
+                        <label class = "links">Interests: </label>
+                        <div id = "interestInputs">
+                            {% if interests %}
+                                {% for interest in interests %}
+                                    <div id = "interest-group">
+                                        <input type="text" name="interests[]" value="{{ interest }}">
+                                        <button type="button" onclick="removeField(this)" class = "button-link" style = "padding: 4px;">Remove</button>
+                                    </div>
+                                {% endfor %}
+                                {% else %}
+                                    <input type="text" name="interests[]">
+                            {% endif %}
                         </div>
-                    {% endfor %}
-                    {% else %}
-                        <input type="text" name="conditions[]">
-                {% endif %}
-            </div>
-            <button type="button" onclick="addTextInput(false)">Add More</button> <br>
-            <div id = "privateSwitch">
-                <label class="switch">
-                    <input type="checkbox" name = "private">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            {% if avatar_url %}
-                <img src="{{ avatar_url }}" alt="Avatar" width="100" height="100">
-            {% endif %}<br>
-            <div id = "fileElement">
-                <input type = "file" id = "fileInput" name = "avatar_file" accept = "image/*"><br>
-            </div>
-            <br>
-            <button type="submit">Save Profile</button>
+                        <button type="button" onclick="addTextInput(true)" class = "button-link" style = "padding: 4px;">Add More</button><br>
+                        <label class = "links">Conditions: </label>
+                        <div id = "conditionInputs">
+                            {% if conditions %}
+                                {% for condition in conditions %}
+                                    <div id = "condition-group">
+                                        <input type="text" name="conditions[]" value="{{ condition }}">
+                                        <button type="button" onclick="removeField(this)" class = "button-link" style = "padding: 4px;">Remove</button>
+                                    </div>
+                                {% endfor %}
+                                {% else %}
+                                    <input type="text" name="conditions[]">
+                            {% endif %}
+                        </div>
+                        <button type="button" onclick="addTextInput(false)" class = "button-link" style = "padding: 4px;">Add More</button> <br>
+                        <div id = "privateSwitch">
+                            <label class = "links">Private: </label>
+                            <label class="switch">
+                                <input type="checkbox" name = "private">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <button type="submit" class = "button-link" style = "margin-left: 67%;">Save Profile</button>
         </form>
     </div>
     {% include "components/footer.html" %}
@@ -62,6 +79,21 @@
         const form = document.getElementById('uploadForm');
         const MAX_SIZE = 1 * 1024 * 1024; // 1 MB
         var error_message = "File is too large. Maximum allowed size is 1MB.";
+        if(fileInput){
+            fileInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.getElementById('imagePreview');
+                        img.src = e.target.result;
+                        img.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            
+            });
+        }
 
         form.addEventListener('submit', function(event) {
             const file = fileInput.files[0];
@@ -78,13 +110,16 @@
             }
         });
         function addTextInput(interests) {
+            const group = document.createElement('div');
             var container;
             if(interests){
                 container = document.getElementById('interestInputs')
+                group.className = 'interest-group'
             }
             else
             {
                 container = document.getElementById('conditionInputs')
+                group.className = 'condition-group'
             }
             const input = document.createElement('input');
             input.type = 'text';
@@ -95,8 +130,18 @@
             {
                 input.name = 'conditions[]';
             }
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = 'Remove';
+            button.onclick = function () {
+                removeField(button);
+            };
+
             container.appendChild(document.createElement('br'));
-            container.appendChild(input);
+            group.appendChild(input);
+            group.appendChild(button);
+            container.appendChild(group);
         }
         function removeField(button){
             const group = button.parentElement;
