@@ -5,7 +5,8 @@ from datetime import datetime, timezone
 from sqlalchemy import PrimaryKeyConstraint
 from sqlalchemy.sql import func
 
-from backend import db
+#from backend import db
+from __init__ import db
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'

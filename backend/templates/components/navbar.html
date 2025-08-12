@@ -1,41 +1,41 @@
 <nav id = "nav">
     {%if current_user.is_authenticated %}
         <nav class="navbar navbar-expand-lg navbar-light custom-nav px-3">
-            <a class="navbar-brand" href="{{ url_for('splash') }}">MedConnect</a>
+            <a class="navbar-brand" href="{{ url_for('splash') }}" style = "color: #412722;"><img src = "{{ url_for('static', filename = 'img/ButterflyLogo1.png') }}" width = "40" height = "40" style = "margin-right: 2%;">Beyond Diagnosis</a>
 
 
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dash') }}">Home</a>
+                        <a class="nav-link" style = "color: #412722;" href="{{ url_for('dash') }}">Home</a>
                     </li>
                     <li class="nav-item">
                         {% if has_group_requests %}
                             <div class = "unreadBox">
-                                <a class="nav-link" href="{{ url_for('viewGroups') }}">Groups</a>
+                                <a class="nav-link" style = "color: #412722;" href="{{ url_for('viewGroups') }}">Groups</a>
                                 <span id = "unreadDot"></span>
                             </div>
                             {% else %}
-                                <a class="nav-link" href="{{ url_for('viewGroups') }}">Groups</a>
+                                <a class="nav-link" style = "color: #412722;" href="{{ url_for('viewGroups') }}">Groups</a>
                         {% endif %}
                     </li>
                     <li class="nav-item">
                         {% if has_friend_requests %}
                             <div class = "unreadBox">
-                                <a class="nav-link" href="{{ url_for('viewFriends') }}">Friends</a>
+                                <a class="nav-link" style = "color: #412722;" href="{{ url_for('viewFriends') }}">Friends</a>
                                 <span id = "unreadDot"></span>
                             </div>
                             {% else %}
-                                <a class="nav-link" href="{{ url_for('viewFriends') }}">Friends</a>
+                                <a class="nav-link" style = "color: #412722;" href="{{ url_for('viewFriends') }}">Friends</a>
                         {% endif %}
                     </li>
                     <li class="nav-item">
                         {% if has_unread_messages %}
                             <div class = "unreadBox">
-                                <a class="nav-link" href="{{ url_for('viewMessageBoard') }}">Messages</a>
+                                <a class="nav-link" style = "color: #412722;" href="{{ url_for('viewMessageBoard') }}">Messages</a>
                                 <span id = "unreadDot"></span>
                             </div>
                             {% else %}
-                                <a class="nav-link" href="{{ url_for('viewMessageBoard') }}">Messages</a>
+                                <a class="nav-link" style = "color: #412722;" href="{{ url_for('viewMessageBoard') }}">Messages</a>
                         {% endif %}
                     </li>
                 </ul>
@@ -45,9 +45,9 @@
                             <img src="{{  avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="User" class="rounded-circle" width="32" height="32" style = "border: 2px solid rgb(55, 50, 62);">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('showProfile', id = current_user.user_id) }}">Profile</a></li>
+                            <li><a class="dropdown-item" style = "color: #412722;" href="{{ url_for('showProfile', id = current_user.user_id) }}">Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                            <li><a class="dropdown-item" style = "color: #412722;" href="{{ url_for('logout') }}">Logout</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -55,12 +55,12 @@
 
     {% else %}
         <nav class="navbar navbar-expand-lg navbar-light custom-nav px-3">
-            <a class="navbar-brand" href="{{ url_for('splash') }}">MedConnect</a>
+            <a class="navbar-brand" href="{{ url_for('splash') }}" style = "color: #412722;" ><img src = "{{ url_for('static', filename = 'img/ButterflyLogo1.png') }}" width = "40" height = "40" style = "margin-right: 2%;">Beyond Diagnosis</a>
 
 
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    <a class="nav-link" href="{{ url_for('login') }}" style = "color: #412722;" >Login</a>
                 </li>
             </ul>
         </nav>

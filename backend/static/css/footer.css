@@ -24,6 +24,15 @@
   margin-bottom: 5%;
 }
 
+.splashItems{
+  text-align: center;
+}
+
+#splashParagraph{
+  width: 50%;
+  margin-left: 25%;
+  margin-top: 2%;
+}
 #userDropdown{
   top: 0 !important;
   left: 100% !important;  /* Position to the right of the button */

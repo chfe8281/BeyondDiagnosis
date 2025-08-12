@@ -20,8 +20,10 @@ from cryptography.fernet import Fernet, InvalidToken
 # Load .env file contents into environment variables
 load_dotenv()
 
-from backend import app
-from backend import db
+# from backend import app
+# from backend import db
+from __init__ import app
+from __init__ import db
 key = os.getenv("FERNET_KEY").encode() 
 f = Fernet(key)
 token = f.encrypt(b"hello world")
@@ -39,7 +41,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from backend.models  import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages
+# from backend.models  import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages
+from models  import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -54,7 +57,8 @@ with app.app_context():
         print("❌ Failed to connect:", e)
         
 with app.app_context():
-    from backend.models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages  
+    #from backend.models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages 
+    from models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages  
     db.create_all()
         
 
