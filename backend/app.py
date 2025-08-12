@@ -54,7 +54,7 @@ with app.app_context():
         print("❌ Failed to connect:", e)
         
 with app.app_context():
-    from models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages  
+    from backend.models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages  
     db.create_all()
         
 
