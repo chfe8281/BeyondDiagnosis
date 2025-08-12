@@ -20,8 +20,8 @@ from cryptography.fernet import Fernet, InvalidToken
 # Load .env file contents into environment variables
 load_dotenv()
 
-from __init__ import app
-from __init__ import db
+from backend import app
+from backend import db
 key = os.getenv("FERNET_KEY").encode() 
 f = Fernet(key)
 token = f.encrypt(b"hello world")
