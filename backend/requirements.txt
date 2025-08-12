@@ -7,3 +7,5 @@ Flask-Login
 Werkzeug
 cloudinary
 cryptography
+flask-cors
+psycopg2-binary
