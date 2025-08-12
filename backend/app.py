@@ -53,6 +53,10 @@ with app.app_context():
     except Exception as e:
         print("❌ Failed to connect:", e)
         
+with app.app_context():
+    from models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages  
+    db.create_all()
+        
 
 # SPLASH PAGE:
 @app.route('/', methods=['GET', 'POST'])
