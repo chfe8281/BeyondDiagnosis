@@ -1,6 +1,9 @@
 Flask
 requests
-flask-cors
 python-dotenv
-psycopg2-binary
+Flask-SQLAlchemy
 SQLAlchemy
+Flask-Login
+Werkzeug
+cloudinary
+cryptography
