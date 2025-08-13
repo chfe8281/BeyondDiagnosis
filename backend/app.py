@@ -63,7 +63,10 @@ with app.app_context():
 # SPLASH PAGE:
 @app.route('/', methods=['GET', 'POST'])
 def splash():
-    return render_template('splash.html')
+    if current_user.is_authenticated:
+        return render_template('splash.html', avatar_url = current_user.avatar_url, user_id = current_user.user_id)
+    else:
+        return render_template('splash.html', avatar_url = None, user_id = None)
 
 # LOGIN/REGISTER:
 @app.route('/register', methods=['GET', 'POST'])

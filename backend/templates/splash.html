@@ -18,8 +18,10 @@
                 and set up your profile. Then explore the existing groups and users to take part in our community. From there you are welcome to post your experiences
                 or individually message friends. 
             </p>
-            <a class = "button-link" style = "margin-right: 1%;" href = "{{url_for('register')}}">Register</a>
-            <a class = "button-link" href = "{{ url_for('login') }}">Login</a>
+            {% if not current_user.is_authenticated %}
+                <a class = "button-link" style = "margin-right: 1%;" href = "{{url_for('register')}}">Register</a>
+                <a class = "button-link" href = "{{ url_for('login') }}">Login</a>
+            {% endif %}
         </div>
     </div>
     {% include "components/footer.html" %}
