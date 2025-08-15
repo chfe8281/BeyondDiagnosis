@@ -6,5 +6,5 @@
 3. Prerequisites to run application:
    Here is a list of all required tools to install. Also found in requirements.txt. Flask, requests, python-dotenv, Flask-SQLAlchemy, SQLAlchemy, Flask-Login, Werkzeug, cloudinary, cryptography, flask-cors, psycopg2-binary, and gunicorn.
 5. Instructions on how to run the application locally:
-   Clone the repository. Then activate your Python virtual environment with command: source venv/bin/activate. Lastly, run the application with command: python3 backend/app.py.
+   Clone the repository. Then activate your Python virtual environment with command: source venv/bin/activate. To run the application use the command: gunicorn backend.app:app. Lastly, visit the site in a web broweser at localhost:8000.
 6. Link to deployed application: https://beyonddiagnosis.onrender.com
