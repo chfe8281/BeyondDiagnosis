@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beyond Diagnosis</title>
     <link rel="icon" href="{{ url_for('static', filename = 'img/ButterflyLogo1.png') }}" type="image/png">
     <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
@@ -14,33 +15,35 @@
         <h3 id = "messageHeader">Messages:</h3>
         <div class = "container-fluid">
             <div class = "row">
-                <div class = "col-md-4 border-end" id = "messageList">
-                    <table id = "message_table">
-                        {% for fm in friend_message %}
-                        <tr class="friendRow" data-friend-id="{{ fm.friend.user_id }}">
-                            {% if fm.message.is_read == false and fm.message.receiver_id == user_id %}
-                                <td id = "message_user">
-                                    <div class = "unreadBox">
-                                        <span id = "unreadDot" style="margin-right: 10%;"></span>
-                                        <p class = "unread">{{ fm.friend.username }}</p>
+                <div class = "col-12 col-md-4" id = "messageList">
+                    <div class="table-responsive">
+                        <table id = "message_table">
+                            {% for fm in friend_message %}
+                            <tr class="friendRow" data-friend-id="{{ fm.friend.user_id }}">
+                                {% if fm.message.is_read == false and fm.message.receiver_id == user_id %}
+                                    <td id = "message_user">
+                                        <div class = "unreadBox">
+                                            <span id = "unreadDot" style="margin-right: 10%;"></span>
+                                            <p class = "unread">{{ fm.friend.username }}</p>
+                                        </div>
+                                    </td>
+                                    {% else %}
+                                        <td id = "message_user">{{ fm.friend.username }}</td>
+                                {% endif %}
+                                <td>
+                                    <div class="lastMessageCol">
+                                        <p id = "lastMessage">{{ fm.decrypted if fm.message else "Start the conversation ..." }}</p>
+                                        {% if fm.message %}
+                                            <p class="timestamp">{{ fm.message.time_sent.strftime('%b %d, %I:%M %p') }}</p>
+                                        {% endif %}
                                     </div>
                                 </td>
-                                {% else %}
-                                    <td id = "message_user">{{ fm.friend.username }}</td>
-                            {% endif %}
-                            <td>
-                                <div class="lastMessageCol">
-                                    <p id = "lastMessage">{{ fm.decrypted if fm.message else "Start the conversation ..." }}</p>
-                                    {% if fm.message %}
-                                        <p class="timestamp">{{ fm.message.time_sent.strftime('%b %d, %I:%M %p') }}</p>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                            {% endfor %}
-                    </table>
+                            </tr>
+                                {% endfor %}
+                        </table>
+                    </div>
                 </div>
-                <div class="col-md-8" id="chatPanel">
+                <div class="col-12 col-md-8" id="chatPanel">
                     <div id="chatBox">
                         {% if messages %}
                             {% include 'components/message_feed.html' %}
@@ -53,6 +56,15 @@
         </div>
     </div>
     {% include "components/footer.html" %}
+    <script>
+        function scrollToBottom() {
+            const chatFeed = document.getElementById("chat-box");
+            if (chatFeed){
+                chatFeed.scrollBottom = chatFeed.scrollHeight;
+            }
+
+        }
+    </script>
     <script src = "../static/src/app.js"></script>
 </body>
 </html>

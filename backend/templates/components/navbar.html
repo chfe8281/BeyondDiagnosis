@@ -3,7 +3,11 @@
         <nav class="navbar navbar-expand-lg navbar-light custom-nav px-3">
             <a class="navbar-brand" href="{{ url_for('splash') }}" style = "color: #412722;"><img src = "{{ url_for('static', filename = 'img/ButterflyLogo1.png') }}" width = "40" height = "40" style = "margin-right: 2%;">Beyond Diagnosis</a>
 
-
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" style = "color: #412722;" href="{{ url_for('dash') }}">Home</a>
@@ -51,6 +55,7 @@
                         </ul>
                     </li>
                 </ul>
+            </div>
         </nav>
 
     {% else %}

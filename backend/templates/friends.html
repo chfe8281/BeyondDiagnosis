@@ -2,17 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beyond Diagnosis</title>
     <link rel="icon" href="{{ url_for('static', filename = 'img/ButterflyLogo1.png') }}" type="image/png">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href = "{{ url_for('static', filename='css/colorScheme.css') }}" rel = "stylesheet">
 </head>
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
         <div class = "row">
-            <div class = "column">
+            <div class = "col-12 col-md-6">
                 <h3>Friends</h3>
                 <table id = "groups_table">
                     {% for friend in friends %}
@@ -63,7 +64,7 @@
                     {% endfor %}
                 </table>
             </div>
-            <div class = "column">
+            <div class = "col-12 col-md-6">
                 <form method="GET" action="{{ url_for('search_users') }}" onsubmit="return false;">
                     <input type="text" name="query" id = "user-search" placeholder="Search users..." autocomplete = "off">
                     <button type="submit" class = "button-link" style = "padding: 0.5% 1%;">Search</button>

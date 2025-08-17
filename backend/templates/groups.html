@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beyond Diagnosis</title>
     <link rel="icon" href="{{ url_for('static', filename = 'img/ButterflyLogo1.png') }}" type="image/png">
     <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
@@ -12,7 +13,7 @@
     {% include "components/navbar.html" %}
     <div class = "contents">
         <div class = "row">
-            <div class = "column">
+            <div class="col-12 col-md-6">
                 <button class = "button-link" id = "groupModalBtn">Create Group</button>
                 <h3>Groups</h3>
                 <table id = "groups_table">
@@ -80,7 +81,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class = "column">
+            <div class = "col-12 col-md-6">
                 <form method="GET" action="{{ url_for('search_groups') }}" onsubmit="return false;">
                     <input type="text" name="groupInput" id = "groupInput" placeholder="Search groups..." autocomplete = "off">
                     <button type="submit" class = "button-link" style = "padding: 0.5% 1%;">Search</button>

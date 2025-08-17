@@ -389,8 +389,7 @@ button {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  overflow: hidden;
-  position: relative;
+  position: absolute;
 }
 
 .chat-box{
@@ -398,6 +397,11 @@ button {
   flex-direction: column;
   padding-bottom: 100px;
   flex-grow: 1; 
+  overflow-y: auto;
+}
+
+#chatPanel{
+  overflow-y: auto;
 }
 
 .message {
@@ -425,9 +429,10 @@ button {
   font-size: 0.75rem;
   color: #888;
   position: relative;
-  bottom: 0;           /* no negative offset */
+  bottom: 0;  
+  margin-left: auto;
+  padding-right: 1rem;
   margin-top: 0.2rem;  /* Pushes it below the message box */
-  right: 0;
   white-space: nowrap;
 }
 
@@ -454,11 +459,11 @@ button {
 
 #messageSender{
   text-align: center;
-  position: fixed;
+  position: absolute;
   bottom: 60px;
-  right: 1%;
+  right: 0;
   display: flex;
-  width: 65%;
+  width: 100%;
   height: 40px;
   justify-content: center;
   z-index: 100;
@@ -474,14 +479,15 @@ button {
 
 #message_table{
   padding: 5%;
-  margin-left: 10%;
   width: 60%;
   table-layout: auto; /* Prevent cells from growing too wide */
   border-collapse: collapse;
 }
 
 #message_user{
-  object-fit: contain;
+  white-space: normal;
+  word-wrap: break-word;
+  min-width: 60px;
 }
 
 #message_table td, th {
@@ -490,15 +496,16 @@ button {
   overflow: hidden;          /* Hide overflow if needed */
   vertical-align: middle;    /* Vertically center content */
   text-align: center;
-  min-width: 100px;
 }
 
 .lastMessageCol{
   display: flex;
   flex-direction: row; /* Stack message and timestamp */
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   vertical-align: middle;
+  min-width: 250px;
+  position: relative;
 }
 
 #lastMessage{
@@ -514,7 +521,11 @@ button {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 10rem;
+  box-sizing: border-box;
+  width: auto;
 }
 
 .unread{
