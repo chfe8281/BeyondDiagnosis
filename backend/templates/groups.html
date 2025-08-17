@@ -95,9 +95,9 @@
                 <h2>Create Group</h2>
                 <form id = "groupForm" method = "POST" enctype="multipart/form-data" action="{{ url_for('createGroup') }}">
                     <label for="name">Group Name:</label>
-                    <input type = "text" id = "name" name = "name" required>
+                    <input type = "text" id = "name" name = "name" maxlength = "100" required>
                     <label for="description">Description:</label>
-                    <textarea id = "description" name = "description" rows = "4" required></textarea>
+                    <textarea id = "description" name = "description" rows = "4" maxlength="140" required></textarea>
                     <input type = "file" id = "fileInput" name = "avatar_file" accept = "image/*" required>
                     <button type = "submit">Submit</button>
                 </form>
