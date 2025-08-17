@@ -12,21 +12,21 @@
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
-        <a href="{{ url_for('viewGroups') }}">Back to Groups</a>
-
-        <table class="profile_table">
-            <tr>
-                <td class = "avatar_cell" style = "width: 220px;">
-                    <img src="{{ group_avatar or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" height = "200" width = "200" id="avatar">
-                </td>
-                <td>
-                    <p><strong>Name:</strong> {{ name }}</p>
-                    <p><strong>Creator:</strong> {{ creator }}</p>
-                    <p><strong>Description:</strong> {{ description }}</p>
-                </td>
-            </tr>
-        </table>
-        
+        <a href="{{ url_for('viewGroups') }}" class = "button-link">Back to Groups</a>
+        <div class = "groupProfile">
+            <div class = "groupProfileCard">
+                <div class = "row">
+                    <div class = "col-12 col-md-6">
+                        <img src="{{ group_avatar or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" height = "200" width = "200" id="avatar">
+                    </div>
+                    <div class = "col-12 col-md-6">
+                        <p><strong>Name:</strong> {{ name }}</p>
+                        <p><strong>Creator:</strong> {{ creator }}</p>
+                        <p><strong>Description:</strong> {{ description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     {% include "components/footer.html" %}

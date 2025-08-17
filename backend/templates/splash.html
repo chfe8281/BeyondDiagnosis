@@ -12,17 +12,19 @@
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents" id = "splashText">
-        <div class = "splashItems">
-            <img src = "{{ url_for('static', filename = 'img/Beyond_Diagnosis (2).png') }}" height = "250" width="500">
-            <p id = "splashParagraph">Welcome to Beyond Diagnosis! A place for people to share their medical journey and find comfort in the experiences of others.
-                Here you will find a grand community of both patients and families happy to share their story as you continue on with your own. First create an account
-                and set up your profile. Then explore the existing groups and users to take part in our community. From there you are welcome to post your experiences
-                or individually message friends. 
-            </p>
-            {% if not current_user.is_authenticated %}
-                <a class = "button-link" style = "margin-right: 1%;" href = "{{url_for('register')}}">Register</a>
-                <a class = "button-link" href = "{{ url_for('login') }}">Login</a>
-            {% endif %}
+        <div class = "col-12 col-md-6" id = "splashCol">
+            <div class = "splashItems">
+                <img src = "{{ url_for('static', filename = 'img/Beyond_Diagnosis (2).png') }}" height = "30%" width="80%">
+                <p id = "splashParagraph">Welcome to Beyond Diagnosis! A place for people to share their medical journey and find comfort in the experiences of others.
+                    Here you will find a grand community of both patients and families happy to share their story as you continue on with your own. First create an account
+                    and set up your profile. Then explore the existing groups and users to take part in our community. From there you are welcome to post your experiences
+                    or individually message friends. 
+                </p>
+                {% if not current_user.is_authenticated %}
+                    <a class = "button-link" style = "margin-right: 1%; margin-bottom: 15px;" href = "{{url_for('register')}}">Sign Up Here</a>
+                    <a class = "button-link" href = "{{ url_for('login') }}">Login Here</a>
+                {% endif %}
+            </div>
         </div>
     </div>
     {% include "components/footer.html" %}

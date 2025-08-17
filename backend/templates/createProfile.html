@@ -14,9 +14,9 @@
     <div class = "contents">
         <h3>Edit Profile</h3>
         <form method="POST" enctype = "multipart/form-data" id = "uploadForm">
-            <table class="profile_table">
-                <tr>
-                    <td class = "avatar_cell" style = "width: 300px;">
+            <div class = "row">
+                <div class = "col-12 col-md-6" id = "profileCol">
+                    <div class = "avatar_cell">
                         <input type="file" id="fileInput" name="avatar_file" accept="image/*" class="custom-file-input">
                         <div id = "imagePost">
                             <div id = "imagePrev">
@@ -26,52 +26,52 @@
                                 <label for="fileInput" class="custom-file-label" style = "padding: 4px;">Add Image</label>
                             </div>
                         </div>
-                    </td>
-                    <td>
-                        <label class = "links">Bio: </label><br>
-                        <textarea name="bio" maxlength = "200" rows = "4" style = "width: 90%;" required>{{ bio if bio else '' }}</textarea><br>
-                        <label class = "links">Location: </label>
-                        <input type="text" name="location" maxlength = "50" value = "{{ location if location else '' }}" required><br>
-                        <label class = "links">User Status: </label>
-                        <input type="text" name="user_type" placeholder="Patient" value = "{{ status if status else '' }}" required><br>
-                        <label class = "links">Interests: </label>
-                        <div id = "interestInputs">
-                            {% if interests %}
-                                {% for interest in interests %}
-                                    <div id = "interest-group">
-                                        <input type="text" maxlength = "50" name="interests[]" value="{{ interest }}">
-                                        <button type="button" onclick="removeField(this)" class = "button-link" style = "padding: 4px;">Remove</button>
-                                    </div>
-                                {% endfor %}
-                                {% else %}
-                                    <input type="text" name="interests[]">
-                            {% endif %}
-                        </div>
-                        <button type="button" onclick="addTextInput(true)" class = "button-link" style = "padding: 4px;">Add More</button><br>
-                        <label class = "links">Conditions: </label>
-                        <div id = "conditionInputs">
-                            {% if conditions %}
-                                {% for condition in conditions %}
-                                    <div id = "condition-group">
-                                        <input type="text" maxlength = "50" name="conditions[]" value="{{ condition }}">
-                                        <button type="button" onclick="removeField(this)" class = "button-link" style = "padding: 4px;">Remove</button>
-                                    </div>
-                                {% endfor %}
-                                {% else %}
-                                    <input type="text" name="conditions[]">
-                            {% endif %}
-                        </div>
-                        <button type="button" onclick="addTextInput(false)" class = "button-link" style = "padding: 4px;">Add More</button> <br>
-                        <div id = "privateSwitch">
-                            <label class = "links">Private: </label>
-                            <label class="switch">
-                                <input type="checkbox" name = "private">
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+                    </div>
+                </div>
+                <div class = "col-12 col-md-6">
+                    <label class = "links">Bio: </label><br>
+                    <textarea name="bio" maxlength = "200" rows = "4" style = "width: 90%;" required>{{ bio if bio else '' }}</textarea><br>
+                    <label class = "links">Location: </label>
+                    <input type="text" name="location" maxlength = "50" value = "{{ location if location else '' }}" required><br>
+                    <label class = "links">User Status: </label>
+                    <input type="text" name="user_type" placeholder="Patient" value = "{{ status if status else '' }}" required><br>
+                    <label class = "links">Interests: </label>
+                    <div id = "interestInputs">
+                        {% if interests %}
+                            {% for interest in interests %}
+                                <div id = "interest-group">
+                                    <input type="text" maxlength = "50" name="interests[]" value="{{ interest }}">
+                                    <button type="button" onclick="removeField(this)" class = "button-link" style = "padding: 4px;">Remove</button>
+                                </div>
+                            {% endfor %}
+                            {% else %}
+                                <input type="text" name="interests[]">
+                        {% endif %}
+                    </div>
+                    <button type="button" onclick="addTextInput(true)" class = "button-link" style = "padding: 4px;">Add More</button><br>
+                    <label class = "links">Conditions: </label>
+                    <div id = "conditionInputs">
+                        {% if conditions %}
+                            {% for condition in conditions %}
+                                <div id = "condition-group">
+                                    <input type="text" maxlength = "50" name="conditions[]" value="{{ condition }}">
+                                    <button type="button" onclick="removeField(this)" class = "button-link" style = "padding: 4px;">Remove</button>
+                                </div>
+                            {% endfor %}
+                            {% else %}
+                                <input type="text" name="conditions[]">
+                        {% endif %}
+                    </div>
+                    <button type="button" onclick="addTextInput(false)" class = "button-link" style = "padding: 4px;">Add More</button> <br>
+                    <div id = "privateSwitch">
+                        <label class = "links">Private: </label>
+                        <label class="switch">
+                            <input type="checkbox" name = "private">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
             <button type="submit" class = "button-link" style = "margin-left: 67%;">Save Profile</button>
         </form>
     </div>
