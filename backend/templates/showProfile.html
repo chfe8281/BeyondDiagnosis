@@ -12,22 +12,24 @@
 <body>
     {% include "components/navbar.html" %}
     <div class = "contents">
-        <table class="profile_table">
-            <tr>
-                <td class = "avatar_cell" style = "width: 220px;">
-                    <img src="{{ users_avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" height = "200" width = "200"  id ="avatar">
-                </td>
-                <td>
-                    <p><strong>Name:</strong> {{ name }}</p>
-                    <p><strong>Bio:</strong> {{ bio }}</p>
-                    <p><strong>User Status:</strong> {{ status }}</p>
-                    <p><strong>Location:</strong> {{ location }}</p>
-                    <p><strong>Interests:</strong> {{ interests }}</p>
-                    <p><strong>Conditions</strong>:</strong> {{ conditions }}</p>
-                    <p><strong>Private:</strong> {{"Yes" if private else "No" }}</p>
-                </td>
-            </tr>
-        </table>
+        <div class = "groupProfile">
+            <div class = "groupProfileCard">
+                <div class = "row">
+                    <div class = "col-12 col-md-6">
+                        <img src="{{ users_avatar_url or url_for('static', filename='img/default_avatar.png') }}" alt="Avatar" class="rounded-circle" height = "200" width = "200"  id ="avatar">
+                    </div>
+                    <div class = "col-12 col-md-6">
+                        <p><strong>Name:</strong> {{ name }}</p>
+                        <p><strong>Bio:</strong> {{ bio }}</p>
+                        <p><strong>User Status:</strong> {{ status }}</p>
+                        <p><strong>Location:</strong> {{ location }}</p>
+                        <p><strong>Interests:</strong> {{ interests }}</p>
+                        <p><strong>Conditions</strong>:</strong> {{ conditions }}</p>
+                        <p><strong>Private:</strong> {{"Yes" if private else "No" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% if edit %}
             <a class = "button-link" style = "margin-left: 67%;" href = "{{ url_for('createProfile') }}">Edit Profile</a>
             {% else %}
