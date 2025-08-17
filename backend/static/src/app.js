@@ -4,6 +4,17 @@ async function searchUsers(query) {
   console.log(users);
 }
 
+function scrollToBottom() {
+  const chatFeed = document.getElementById("chatPanel");
+  if (chatFeed) {
+    const messages = chatPanel.querySelectorAll(".message");
+    if (messages.length === 0) return;
+
+    const lastMessage = messages[messages.length - 1];
+    lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
+  }
+}
+
 async function sendFriendRequest(userId) {
   try {
     const response = await fetch(`/friends/requests/send/${userId}`, {
@@ -211,6 +222,7 @@ document.addEventListener("DOMContentLoaded", function() {
           .then(response => response.text())
           .then(html => {
             chatPanel.innerHTML = html;
+            scrollToBottom();
           })
           .catch(err => {
             console.error("Error loading messages:", err);
