@@ -2,7 +2,7 @@
   <div class="chat-box" id="chat-feed">
     {% for msg in messages %}
       <div class="message {% if msg.message.sender_id == user_id %}sent{% else %}received{% endif %}">
-        <div class="postBottom" style = "justify-content: left;">
+        <div class="postBottom" style = "justify-content: left; flex-direction: column;">
           <p id="username">{{ msg.sender.username }}</p>
           <p>{{ msg.content }}</p>
         </div>

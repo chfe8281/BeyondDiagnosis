@@ -82,12 +82,16 @@
                 </table>
             </div>
             <div class = "col-12 col-md-6">
-                <div class = "searchBox">
-                    <form class = "searchBar" method="GET" action="{{ url_for('search_groups') }}" onsubmit="return false;">
-                        <input type="text" name="groupInput" id = "groupInput" placeholder="Search groups..." autocomplete = "off">
-                        <button type="submit" class = "button-link" style = "padding: 0.5% 1%;">Search</button>
-                        <div id = "group_results" class = "dropdown"></div>
-                    </form>
+                <div class = "groupSearch">
+                    <div class = "searchBox">
+                        <div class = "searchWrapper">
+                            <form class = "searchBar" method="GET" action="{{ url_for('search_groups') }}" onsubmit="return false;">
+                                <input type="text" name="groupInput" id = "groupInput" placeholder="Search groups..." autocomplete = "off">
+                                <button type="submit" class = "button-link" style = "padding: 0.5% 1%;">Search</button>
+                            </form>
+                            <div id = "group_results" class = "dropdown"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
