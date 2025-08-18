@@ -17,7 +17,7 @@
             <div class = "column-small">
                 <button class = "button-link" id = "groupModalBtn">New Post</button>
                 <div id = "groupModal" class = "modal">
-                    <div class = "modal-content">
+                    <div class = "modal-content" id = "groupModalCont">
                         <span class = "close" id = "closeGroupModalBtn" >&times;</span>
                         <form method="GET" action="{{ url_for('search_joined_groups') }}" onsubmit="return false;">
                             <input type="text" name="groupId" id="groupId" placeholder="Search groups..." autocomplete="off">

@@ -248,14 +248,33 @@ button {
   flex: 50%;
 }
 
-.column-small{
-  flex: 15%;
+.column-small {
+  flex: 0 0 100%; /* default: full width on small screens */
 }
 
-.column-large{
-  flex: 85%;
+.column-large {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 100%; /* default: full width on small screens */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
+/* For screens ≥ 768px (typical breakpoint for tablets/desktops) */
+@media screen and (min-width: 768px) {
+  .column-small {
+    flex: 0 0 15%;
+  }
+
+  .column-large {
+    flex: 0 0 85%;
+  }
+
+  .postCard{
+    margin-right: 20%;
+  }
+}
 .profile_table {
   width: 100%;
   max-width: 50%;
@@ -290,6 +309,11 @@ button {
   vertical-align: middle;    /* Vertically center content */
   text-align: center;
 }
+
+.searchWrapper{
+  position: relative;
+  width: 100%;
+}
 .searchBox{
   margin-left: 1px;
   margin-right: 1px;
@@ -303,6 +327,22 @@ button {
   width: 100%;
   height: 40px;
   justify-content: center;
+}
+
+.groupSearch{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+#group_results, #search_results{
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 76%;
+  z-index: 10;
+  border: 1px solid #412722;
+  background-color: #fcfcf8;
 }
 
 #groupInput{
@@ -399,7 +439,6 @@ button {
   width: 50%;
   padding: inherit;
   margin-top: 2.5%;
-  margin-left: 15%;
   display: flex;
   flex-direction: column;
   background-color: rgb(247, 225, 229);
