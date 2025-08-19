@@ -33,8 +33,11 @@
                     <textarea name="bio" maxlength = "200" rows = "4" style = "width: 90%;" required>{{ bio if bio else '' }}</textarea><br>
                     <label class = "links">Location: </label>
                     <input type="text" name="location" maxlength = "50" value = "{{ location if location else '' }}" required><br>
-                    <label class = "links">User Status: </label>
-                    <input type="text" name="user_type" placeholder="Patient" value = "{{ status if status else '' }}" required><br>
+                    <label class="links" for="user_type">User Status:</label>
+                    <select name="user_type" id="user_type" required>
+                        <option value="Patient" {%if status == 'Patient' %}selected{% endif %}>Patient</option>
+                        <option value="Caregiver" {%if status == 'Caregiver' %}selected{% endif %}>Caregiver</option>
+                    </select><br>
                     <label class = "links">Interests: </label>
                     <div id = "interestInputs">
                         {% if interests %}
