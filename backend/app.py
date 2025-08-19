@@ -40,7 +40,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from backend.models  import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages
+from backend.models  import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages, Victories
 
 
 @login_manager.user_loader
@@ -56,7 +56,7 @@ with app.app_context():
         print("❌ Failed to connect:", e)
         
 with app.app_context():
-    from backend.models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages  
+    from backend.models import User, Profile, Friends, Friend_Requests, Groups, GroupRequests, GroupMembers, Posts, Messages, Victories
     db.create_all()
         
 
@@ -610,6 +610,54 @@ def search_groups():
 def group_profile(id):
     group_returned = Groups.query.filter(Groups.group_id == id).first()
     return render_template('groupProfile.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url, name = group_returned.name, creator = group_returned.creator, description = group_returned.description, group_avatar = group_returned.avatar_link)
+
+@app.route('/victoryVoices', methods = ['GET', 'POST'])
+@login_required
+def viewVictories():
+    victories = []
+    vics = Victories.query.order_by(Victories.created_at.desc()).all()
+    for victory in vics:
+        timeSent = time_since(victory.created_at)
+        if victory.anonymous == True:
+            user = 'anonymous'
+        else:
+            userObject = User.query.filter(User.user_id == victory.creator_id).first()
+            user = userObject.username
+        decrypted_content = f.decrypt(victory.content).decode('utf-8')
+        victories.append({'victory': victory, 'timeSent': timeSent, 'user': user, 'content': decrypted_content})
+        
+    return render_template('victoryVoices.html', user_id = current_user.user_id, avatar_url = current_user.avatar_url, victories = victories)
+
+@app.route('/victoryVoices/create', methods = ['GET', 'POST'])
+@login_required
+def createVictory():
+    print("before post check")
+    if request.method == 'POST':
+        print("in post")
+        _content = request.form.get('content')
+        _anonymous = False
+        if request.form.get('anonymous') is not None:
+            _anonymous = True
+        encrypted_content = f.encrypt(_content.encode()).decode() 
+        _creator_id = current_user.user_id
+        
+        new_victory = Victories(creator_id = _creator_id, content = encrypted_content, anonymous = _anonymous)
+        
+        db.session.add(new_victory)
+        db.session.commit()
+        return redirect(url_for('viewVictories'))
+        
+    return redirect(url_for('viewVictories'))
+
+@app.route('/victoryVoices/like/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def likeVictory(id):
+    vic = Victories.query.filter(Victories.victory_id == id).first()
+    current_likes = vic.likes
+    vic.likes = current_likes + 1
+    db.session.commit()
+        
+    return redirect(url_for('viewVictories'))
 
 @app.route('/messages', methods = ['GET', 'POST'])
 @login_required

@@ -1,4 +1,4 @@
-DROP TABLE comments;
+DROP TABLE victories;
 DROP TABLE posts;
 DROP TABLE groups_to_users;
 DROP TABLE group_requests;
@@ -108,14 +108,14 @@ CREATE TABLE IF NOT EXISTS posts (
 );
 
 
-CREATE TABLE IF NOT EXISTS comments (
-  comment_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS victories(
+  victory_id SERIAL PRIMARY KEY,
   creator_id INT NOT NULL,
-  post_id INT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   content VARCHAR(140) NOT NULL,
-  FOREIGN KEY (creator_id) REFERENCES users(user_id),
-  FOREIGN KEY (post_id) REFERENCES posts(post_id)
+  likes INT DEFAULT 0 NOT NULL,
+  anonymous BOOLEAN NOT NULL,
+  FOREIGN KEY (creator_id) REFERENCES users(user_id)
 );
 DELETE FROM users;
 DELETE FROM friends;

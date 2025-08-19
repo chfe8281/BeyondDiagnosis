@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond Diagnosis</title>
+    <link rel="icon" href="{{ url_for('static', filename = 'img/ButterflyLogo1.png') }}" type="image/png">
+    <link href = "{{ url_for('static', filename='css/footer.css') }}" rel = "stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href = "{{ url_for('static', filename='css/colorScheme.css') }}" rel = "stylesheet"> 
+</head>
+<body>
+    {% include "components/navbar.html" %}
+    <div class = "contents">
+        <div class = "vicRow">
+            <button class = "button-link" id = "groupModalBtn" style = "max-width: 200px; margin-right: 5%;">Add Victory</button>
+        </div>
+        <div class = "vicRow">
+            {% for vic in victories %}
+                <div class = "victory">
+                    <p><b>{{ vic.user }} </b>{{ vic.content }}</p>
+                    <div class = "postBottom">
+                        <a href="{{ url_for('likeVictory', id=vic.victory.victory_id) }}"><img src="{{ url_for('static', filename='img/handCelebrateEmoji.png') }}" alt="Like" style="width: 24px; height: 24px;"></a>
+                         {{ vic.victory.likes }}
+                        <span class="timestamp">{{ vic.timeSent }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+
+        <div id = "groupModal" class = "modal">
+            <div class = "modal-content" id = "groupModalCont">
+                <span class = "close" id = "closeGroupModalBtn" >&times;</span>
+                <h2>Add Victory</h2>
+                <form id = "groupForm" method = "POST" enctype="multipart/form-data" action="{{ url_for('createVictory') }}">
+                    <label for="content">Content:</label>
+                    <textarea id = "description" name = "content" rows = "4" maxlength="140" required></textarea>
+                    <label for="anonymousSwitch">Anonymous:</label>
+                    <label class="switch">
+                        <input type="checkbox" name = "anonymous">
+                        <span class="slider round"></span>
+                    </label><br>
+                    <button type = "submit" class = "button-link" style = "margin-left: auto;">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% include "components/footer.html" %}
+    <script src = "../static/src/app.js"></script>
+</body>
+</html>

@@ -95,3 +95,12 @@ class Messages(db.Model):
     content = db.Column(db.Text, nullable = False)
     time_sent = db.Column(db.DateTime(timezone=True), server_default=func.now())
     is_read = db.Column(db.Boolean, default = False)
+    
+class Victories(db.Model):
+    __tablename__ = 'victories'
+    victory_id = db.Column(db.Integer, primary_key = True)
+    creator_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    created_at = db.Column(db.DateTime(timezone = True), server_default = func.now())
+    content = db.Column(db.String(140), nullable = False)
+    likes = db.Column(db.Integer, default = 0, nullable = False)
+    anonymous =db.Column(db.Boolean, default = False, nullable = False)
