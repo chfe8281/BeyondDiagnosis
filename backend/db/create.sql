@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS victories(
   victory_id SERIAL PRIMARY KEY,
   creator_id INT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  content VARCHAR(140) NOT NULL,
+  content TEXT NOT NULL,
   likes INT DEFAULT 0 NOT NULL,
   anonymous BOOLEAN NOT NULL,
   FOREIGN KEY (creator_id) REFERENCES users(user_id)
